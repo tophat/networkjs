@@ -1,5 +1,5 @@
 import { EventEmitter } from './events'
-import { NetworkSpeed, NetworkStatuses } from './constants'
+import { NetworkSpeed, NetworkStatuses, Saga, Sagas } from './constants'
 
 import NetworkSaga from './sagas/network'
 import StabilitySaga from './sagas/stability'
@@ -37,11 +37,13 @@ class Network {
     constructor({ stabilityConfig = {} }) {
         this.eventEmitter = new EventEmitter()
         _registerNetworkStatusEvents(this.eventEmitter)
-        this.networkSaga = _startNetworkSaga(this.eventEmitter)
-        this.stabilitySaga = _startStabilitySaga(
-            this.eventEmitter,
-            stabilityConfig,
-        )
+        this.sagas = {
+            [Saga.NETWORK]: _startNetworkSaga(this.eventEmitter),
+            [Saga.STABILITY]: _startStabilitySaga(
+                this.eventEmitter,
+                stabilityConfig,
+            ),
+        }
     }
 
     on(event, callback) {
@@ -60,14 +62,16 @@ class Network {
         })
     }
 
-    pause() {
-        this.networkSaga.pause()
-        if (this.stabilitySaga) this.stabilitySaga.pause()
+    pause(saga) {
+        Sagas.filter(s => !saga || s === saga).forEach(s => {
+            this.sagas[s] && this.sagas[s].pause()
+        })
     }
 
-    resume() {
-        this.networkSaga.resume()
-        if (this.stabilitySaga) this.stabilitySaga.resume()
+    resume(saga) {
+        Sagas.filter(s => !saga || s === saga).forEach(s => {
+            this.sagas[s] && this.sagas[s].resume()
+        })
     }
 }
 
