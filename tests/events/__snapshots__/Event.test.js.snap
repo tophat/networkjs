@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Event constructor initializes with the correct props 1`] = `
+Event {
+  "callbacks": Array [],
+  "name": "test",
+}
+`;

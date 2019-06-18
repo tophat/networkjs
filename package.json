@@ -16,6 +16,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "jest",
+    "test-snapshots": "jest -u",
     "lint": "eslint . --max-warnings 0",
     "fix": "eslint --fix .",
     "build": "babel src -d lib --copy-files",
@@ -43,6 +44,7 @@
   },
   "peerDependencies": {},
   "jest": {
+    "setupFiles": ["<rootDir>/node_modules/regenerator-runtime/runtime"],
     "collectCoverageFrom": [
       "src/**/*.js"
     ]

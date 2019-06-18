@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EventEmitter constructor initializes with the correct props 1`] = `
+EventEmitter {
+  "events": Object {},
+}
+`;
