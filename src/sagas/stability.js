@@ -1,10 +1,10 @@
 import { NetworkStatus } from '../constants'
 
-const delay = async interval => {
+export const delay = async interval => {
     return await new Promise(done => setTimeout(() => done(), interval))
 }
 
-const ping = async resource => {
+export const ping = async resource => {
     try {
         await fetch(resource)
     } catch (e) {

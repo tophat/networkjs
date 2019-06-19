@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Stability Saga StabilitySaga constructor initializes with the correct props 1`] = `
+StabilitySaga {
+  "consecutiveSlowRequestCount": 0,
+  "durationThreshold": 2,
+  "emitter": EventEmitter {
+    "events": Object {},
+  },
+  "interval": 5000,
+  "paused": false,
+  "requestThreshold": 2000,
+  "resource": "URL",
+}
+`;
