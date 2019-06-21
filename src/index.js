@@ -34,7 +34,7 @@ const _startStabilitySaga = (
 }
 
 class Network {
-    constructor({ stabilityConfig = {} }) {
+    constructor({ stabilityConfig = {} } = {}) {
         this.eventEmitter = new EventEmitter()
         _registerNetworkStatusEvents(this.eventEmitter)
         this.sagas = {
