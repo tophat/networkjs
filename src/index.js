@@ -16,12 +16,19 @@ const _startNetworkSaga = emitter => {
 }
 
 const _startServiceSaga = (emitter, config) => {
-    if (!emitter) return null
+    if (!config) return null
 
-    const { prefixes = [], statuses = [502, 503, 504] } = config
+    const {
+        prefixes = '*',
+        statuses = [502, 503, 504],
+        failureThreshold = 2,
+        decrementTime = 10000,
+    } = config
     return new ServiceSaga(emitter, {
         prefixes,
         statuses,
+        failureThreshold,
+        decrementTime,
     })
 }
 
@@ -71,7 +78,7 @@ class Network {
         })
     }
 
-    service(prefix, status) {
+    serviceError(prefix, status) {
         if (!this.sagas[Saga.SERVICE]) {
             throw new Error(`Service saga not configured`)
         }
