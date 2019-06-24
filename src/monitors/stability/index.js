@@ -1,4 +1,5 @@
-import { NetworkStatus } from '../constants'
+import { NetworkStatus } from '../../constants'
+import { StabilityDefaults } from './Stability.constants'
 
 export const delay = async interval => {
     return await new Promise(done => setTimeout(() => done(), interval))
@@ -13,10 +14,15 @@ export const ping = async resource => {
     return true
 }
 
-class StabilitySaga {
+class StabilityMonitor {
     constructor(
         emitter,
-        { resource, interval, requestThreshold, durationThreshold },
+        {
+            resource,
+            interval = StabilityDefaults.INTERVAL,
+            requestThreshold = StabilityDefaults.REQUEST_THRESHOLD,
+            durationThreshold = StabilityDefaults.DURATION_THRESHOLD,
+        },
     ) {
         this.emitter = emitter
         this.resource = resource
@@ -71,4 +77,4 @@ class StabilitySaga {
     }
 }
 
-export default StabilitySaga
+export default StabilityMonitor

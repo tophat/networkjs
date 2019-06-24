@@ -1,9 +1,9 @@
 import { EventEmitter } from './events'
-import { NetworkSpeed, NetworkStatuses, Saga, Sagas } from './constants'
+import { NetworkStatuses, Monitor, Monitors } from './constants'
 
-import NetworkSaga from './sagas/network'
-import ServiceSaga from './sagas/service'
-import StabilitySaga from './sagas/stability'
+import NetworkMonitor from './monitors/network'
+import ServiceMonitor from './monitors/service'
+import StabilityMonitor from './monitors/stability'
 
 const _registerNetworkStatusEvents = emitter => {
     NetworkStatuses.forEach(s => {
@@ -11,54 +11,33 @@ const _registerNetworkStatusEvents = emitter => {
     })
 }
 
-const _startNetworkSaga = emitter => {
-    return new NetworkSaga(emitter)
+const _monitorNetwork = emitter => {
+    return new NetworkMonitor(emitter)
 }
 
-const _startServiceSaga = (emitter, config) => {
+const _monitorService = (emitter, config) => {
     if (!config) return null
 
-    const {
-        prefixes = '*',
-        statuses = [502, 503, 504],
-        failureThreshold = 2,
-        decrementTime = 10000,
-    } = config
-    return new ServiceSaga(emitter, {
-        prefixes,
-        statuses,
-        failureThreshold,
-        decrementTime,
-    })
+    return new ServiceMonitor(emitter, config)
 }
 
-const _startStabilitySaga = (
-    emitter,
-    {
-        resource = null,
-        interval = NetworkSpeed.INTERVAL,
-        requestThreshold = NetworkSpeed.REQUEST_THRESHOLD,
-        durationThreshold = NetworkSpeed.DURATION_THRESHOLD,
-    },
-) => {
-    if (!resource || typeof resource !== 'string') return null
+const _monitorStability = (emitter, config) => {
+    if (!config || !config.resource) return null
 
-    return new StabilitySaga(emitter, {
-        resource,
-        interval,
-        requestThreshold,
-        durationThreshold,
-    })
+    return new StabilityMonitor(emitter, config)
 }
 
 class Network {
-    constructor({ service = null, stability = {} } = {}) {
+    constructor({ service = null, stability = null } = {}) {
         this.eventEmitter = new EventEmitter()
         _registerNetworkStatusEvents(this.eventEmitter)
-        this.sagas = {
-            [Saga.NETWORK]: _startNetworkSaga(this.eventEmitter),
-            [Saga.SERVICE]: _startServiceSaga(this.eventEmitter, service),
-            [Saga.STABILITY]: _startStabilitySaga(this.eventEmitter, stability),
+        this.monitors = {
+            [Monitor.NETWORK]: _monitorNetwork(this.eventEmitter),
+            [Monitor.SERVICE]: _monitorService(this.eventEmitter, service),
+            [Monitor.STABILITY]: _monitorStability(
+                this.eventEmitter,
+                stability,
+            ),
         }
     }
 
@@ -79,22 +58,22 @@ class Network {
     }
 
     serviceError(prefix, status) {
-        if (!this.sagas[Saga.SERVICE]) {
-            throw new Error(`Service saga not configured`)
+        if (!this.monitors[Monitor.SERVICE]) {
+            throw new Error(`Service monitor not configured`)
         }
 
-        this.sagas[Saga.SERVICE].handleError(prefix, status)
+        this.monitors[Monitor.SERVICE].handleError(prefix, status)
     }
 
-    pause(saga) {
-        Sagas.filter(s => !saga || s === saga).forEach(s => {
-            this.sagas[s] && this.sagas[s].pause()
+    pause(monitor) {
+        Monitors.filter(m => !monitor || m === monitor).forEach(m => {
+            this.monitors[m] && this.monitors[m].pause()
         })
     }
 
-    resume(saga) {
-        Sagas.filter(s => !saga || s === saga).forEach(s => {
-            this.sagas[s] && this.sagas[s].resume()
+    resume(monitor) {
+        Monitors.filter(m => !monitor || m === monitor).forEach(m => {
+            this.monitors[m] && this.monitors[m].resume()
         })
     }
 }

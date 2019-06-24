@@ -1,7 +1,7 @@
-export const Saga = {
+export const Monitor = {
     NETWORK: 'network',
     SERVICE: 'service',
     STABILITY: 'stability',
 }
 
-export const Sagas = Object.values(Saga)
+export const Monitors = Object.values(Monitor)
