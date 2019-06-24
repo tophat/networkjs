@@ -1,6 +1,6 @@
-import { NetworkStatus } from '../constants'
+import { NetworkStatus } from '../../constants'
 
-class NetworkSaga {
+class NetworkMonitor {
     constructor(emitter) {
         this.emitter = emitter
         this.emitOnlineEvent = () => {
@@ -27,4 +27,4 @@ class NetworkSaga {
     }
 }
 
-export default NetworkSaga
+export default NetworkMonitor

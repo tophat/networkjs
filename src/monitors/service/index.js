@@ -1,9 +1,15 @@
-import { NetworkStatus } from '../constants'
+import { NetworkStatus } from '../../constants'
+import { ServiceDefaults } from './Service.constants'
 
-class ServiceSaga {
+class ServiceMonitor {
     constructor(
         emitter,
-        { prefixes, statuses, failureThreshold, decrementTime },
+        {
+            prefixes = ServiceDefaults.PREFIXES,
+            statuses = ServiceDefaults.STATUSES,
+            failureThreshold = ServiceDefaults.FAILURE_THRESHOLD,
+            decrementTime = ServiceDefaults.DECREMENT_TIME,
+        },
     ) {
         this.emitter = emitter
         this.prefixes = prefixes
@@ -108,4 +114,4 @@ class ServiceSaga {
     }
 }
 
-export default ServiceSaga
+export default ServiceMonitor

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Stability Saga StabilitySaga constructor initializes with the correct props 1`] = `
-StabilitySaga {
+exports[`Stability Monitor StabilityMonitor constructor initializes with the correct props 1`] = `
+StabilityMonitor {
   "consecutiveSlowRequestCount": 0,
   "durationThreshold": 2,
   "emitter": EventEmitter {
