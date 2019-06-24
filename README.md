@@ -67,6 +67,8 @@ If you want to receive service stability events, you must supply an array of URL
 
 `prefixes`: Array of URL prefixes (required)<br />
 `statuses`: Array of statuses dictating a service degradation (optional, default [502, 503, 504])<br />
+`failureThreshold`: Minimum number of consecutive failures that dictate a degraded service (optional, default 2)<br />
+`decrementTime`: Amount of time until a failure is dismissed (optional, default 10000 ms)<br />
 
 ## Example
 
@@ -123,7 +125,8 @@ const Net = new Network({
         resource: 'https://path.to.your.resource'
     },
     services: {
-        prefixes: []
+        prefixes: ['api/v1/resource1', 'api/v2/resource2'],
+        statuses: [500, 502, 503, 504]
     }
 })
 
