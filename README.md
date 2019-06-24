@@ -36,7 +36,7 @@ These events are enabled by default and do not require any additional configurat
 
 ### Stability: Detecting network unstable/stable events
 
-If you want to receive network stability events, you need to at least supply a URL to the resource you wish to ping. Please keep in mind that the resource you provide will affect the duration of the ping. If you choose a smaller/larger resource, you should decrease/increase the `durationThreshold` (see below).
+If you want to receive network stability events, you need to supply a URL to the resource you wish to ping. Please keep in mind that the resource you provide will affect the duration of the ping. If you choose a smaller/larger resource, you should decrease/increase the `durationThreshold` (see below).
 
 ```javascript
 {
@@ -47,10 +47,10 @@ If you want to receive network stability events, you need to at least supply a U
 }
 ```
 
-`resource`: Resource to ping (required)<br />
-`interval`: Ping interval (optional, default 5000ms)<br />
-`durationThreshold`: Maximum duration that dictates a slow request (optional, default 2000ms)<br />
-`requestThreshold`: Minimum number of consecutive slow requests that dictate an unstable network (optional, default 2)<br />
+`resource`: Resource to ping **(required)**<br />
+`interval`: Ping interval **(optional, default 5000ms)**<br />
+`durationThreshold`: Maximum duration that dictates a slow request **(optional, default 2000ms)**<br />
+`requestThreshold`: Minimum number of consecutive slow requests that dictate an unstable network **(optional, default 2)**<br />
 
 ### Service: Detecting 3rd party service degraded/resolved events
 
@@ -59,16 +59,16 @@ If you want to receive service stability events, you must supply an array of URL
 ```javascript
 {
     service: {
-        prefixes: [],
+        prefixes: ['prefix1', 'prefix2'],
         ...
     }
 }
 ```
 
-`prefixes`: Array of URL prefixes (required)<br />
-`statuses`: Array of statuses dictating a service degradation (optional, default [502, 503, 504])<br />
-`failureThreshold`: Minimum number of consecutive failures that dictate a degraded service (optional, default 2)<br />
-`decrementTime`: Amount of time until a failure is dismissed (optional, default 10000 ms)<br />
+`prefixes`: Array of URL prefixes to track **(optional, defaults to tracking any failures)**<br />
+`statuses`: Array of statuses dictating a service degradation **(optional, default [502, 503, 504])**<br />
+`failureThreshold`: Minimum number of consecutive failures that dictate a degraded service **(optional, default 2)**<br />
+`decrementTime`: Amount of time until a failure is dismissed **(optional, default 10000ms)**<br />
 
 ## Example
 
