@@ -1,4 +1,4 @@
-import { NetworkStatus } from '../constants'
+import { NetworkStatus } from '../../constants'
 
 class NetworkMonitor {
     constructor(emitter) {
