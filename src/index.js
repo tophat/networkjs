@@ -2,6 +2,7 @@ import { EventEmitter } from './events'
 import { NetworkSpeed, NetworkStatuses, Saga, Sagas } from './constants'
 
 import NetworkSaga from './sagas/network'
+import ServiceSaga from './sagas/service'
 import StabilitySaga from './sagas/stability'
 
 const _registerNetworkStatusEvents = emitter => {
@@ -12,6 +13,23 @@ const _registerNetworkStatusEvents = emitter => {
 
 const _startNetworkSaga = emitter => {
     return new NetworkSaga(emitter)
+}
+
+const _startServiceSaga = (emitter, config) => {
+    if (!config) return null
+
+    const {
+        prefixes = '*',
+        statuses = [502, 503, 504],
+        failureThreshold = 2,
+        decrementTime = 10000,
+    } = config
+    return new ServiceSaga(emitter, {
+        prefixes,
+        statuses,
+        failureThreshold,
+        decrementTime,
+    })
 }
 
 const _startStabilitySaga = (
@@ -34,15 +52,13 @@ const _startStabilitySaga = (
 }
 
 class Network {
-    constructor({ stabilityConfig = {} }) {
+    constructor({ service = null, stability = {} } = {}) {
         this.eventEmitter = new EventEmitter()
         _registerNetworkStatusEvents(this.eventEmitter)
         this.sagas = {
             [Saga.NETWORK]: _startNetworkSaga(this.eventEmitter),
-            [Saga.STABILITY]: _startStabilitySaga(
-                this.eventEmitter,
-                stabilityConfig,
-            ),
+            [Saga.SERVICE]: _startServiceSaga(this.eventEmitter, service),
+            [Saga.STABILITY]: _startStabilitySaga(this.eventEmitter, stability),
         }
     }
 
@@ -60,6 +76,14 @@ class Network {
                 callback(s, ...args)
             })
         })
+    }
+
+    serviceError(prefix, status) {
+        if (!this.sagas[Saga.SERVICE]) {
+            throw new Error(`Service saga not configured`)
+        }
+
+        this.sagas[Saga.SERVICE].handleError(prefix, status)
     }
 
     pause(saga) {
