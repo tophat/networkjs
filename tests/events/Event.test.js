@@ -8,18 +8,18 @@ describe('Event', () => {
         e = new Event(eventName)
     })
 
-    describe('constructor', () =>{
+    describe('constructor', () => {
         it('initializes with the correct props', () => {
             expect(e).toMatchSnapshot()
         })
     })
 
-    describe('registerCallback', () =>{
+    describe('registerCallback', () => {
         it('adds callback to event callbacks', () => {
             const callback = jest.fn()
             e.registerCallback(callback)
 
-            expect(e.callbacks).toBe([callback])
+            expect(e.callbacks).toStrictEqual([callback])
         })
     })
 })

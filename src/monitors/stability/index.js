@@ -29,6 +29,7 @@ class StabilityMonitor {
         this.interval = interval
         this.requestThreshold = requestThreshold
         this.durationThreshold = durationThreshold
+
         this.initialize()
     }
 
