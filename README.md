@@ -54,7 +54,7 @@ If you want to receive network stability events, you need to supply a URL to the
 
 ### Service: Detecting 3rd party service degraded/resolved events
 
-If you want to receive service stability events, you must supply an array of URL prefixes for the services you wish to track. This saga can be hooked into your current HTTP library. For each request, you feed it the request URL and the response status code, and it will emit events upon hitting given degraded/resolved thresholds.
+If you want to receive service stability events, you must supply an array of URL prefixes for the services you wish to track. This saga can be hooked into your current HTTP library. For each request, you feed it the request URL and the response status code, and it will emit events upon hitting the given failure threshold.
 
 ```javascript
 {
@@ -72,7 +72,9 @@ If you want to receive service stability events, you must supply an array of URL
 
 ## Example
 
-You can also omit any configuration to just receive network online/offline events.
+### Network
+
+You can omit any configuration to just receive network online/offline events.
 
 ```javascript
 const Net = new Network()
@@ -85,6 +87,8 @@ Net.on('offline', () => {
     console.log('Network - OFFLINE')
 })
 ```
+
+### Stability
 
 ```javascript
 const Net = new Network({
@@ -102,6 +106,8 @@ Net.on('stable', () => {
 })
 ```
 
+### Service
+
 ```javascript
 const Net = new Network({
     services: {
@@ -118,6 +124,8 @@ Net.on('resolved', (service) => {
     console.log(`Network - ${service} - RESOLVED`)
 })
 ```
+
+### All
 
 ```javascript
 const Net = new Network({
