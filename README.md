@@ -54,7 +54,7 @@ If you want to receive network stability events, you need to supply a URL to the
 
 ### Service: Detecting 3rd party service degraded/resolved events
 
-If you want to receive service stability events, you must supply an array of URL prefixes for the services you wish to track. This saga can be hooked into your current HTTP library. For each request, you feed it the request URL and the response status code, and it will emit events upon hitting the given failure threshold.
+If you want to receive service stability events, you can supply an array of URL prefixes for the services you wish to track.
 
 ```javascript
 {
@@ -69,6 +69,20 @@ If you want to receive service stability events, you must supply an array of URL
 `statuses`: Array of statuses dictating a service degradation **(optional, default [502, 503, 504])**<br />
 `failureThreshold`: Minimum number of consecutive failures that dictate a degraded service **(optional, default 2)**<br />
 `decrementTime`: Amount of time until a failure is dismissed **(optional, default 10000ms)**<br />
+
+This monitor can be hooked into your current HTTP library. For each request, you feed it the request URL and the response status code, and it will emit events upon hitting the given failure threshold.
+
+```javascript
+const Net = new Network({ service = {...} })
+
+this.axios.interceptors.response.use(
+    success => success,
+    (error) => {
+        Net.serviceError(error.requestUrl, error.status)
+        return error
+    },
+)
+```
 
 ## Example
 

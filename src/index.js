@@ -57,12 +57,12 @@ class Network {
         })
     }
 
-    serviceError(prefix, status) {
+    serviceError(url, status) {
         if (!this.monitors[Monitor.SERVICE]) {
             throw new Error(`Service monitor not configured`)
         }
 
-        this.monitors[Monitor.SERVICE].handleError(prefix, status)
+        this.monitors[Monitor.SERVICE].handleError(url, status)
     }
 
     pause(monitor) {
