@@ -27,6 +27,7 @@ jobs:
     <<: *docker_defaults
     working_directory: ~/project
     steps:
+      - checkout
       - run: yarn install
       - save_env
   build:
