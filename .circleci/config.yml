@@ -56,13 +56,13 @@ workflows:
     jobs:
       - install
       - lint:
-        - requires:
+        requires:
           - install
       - test:
-        - requires:
+        requires:
           - install
       - build:
-        - requires:
+        requires:
           - install
 
 experimental:
