@@ -1,4 +1,5 @@
 # NetworkJS
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 
 A utility library that emits network connectivity events
 
@@ -156,3 +157,19 @@ Net.all((event) => {
     console.log('Network -', event)
 })
 ```
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/jackcohen5"><img src="https://avatars3.githubusercontent.com/u/8365264?v=4" width="100px;" alt="Jack Cohen"/><br /><sub><b>Jack Cohen</b></sub></a><br /><a href="#ideas-jackcohen5" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/tophat/networkjs/commits?author=jackcohen5" title="Code">💻</a></td>
+  </tr>
+</table>
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
