@@ -9,7 +9,7 @@ commands:
     description: "Prepares dependencies"
     steps:
       - checkout:
-          path: ~/repo
+          path: ~/project
       - restore_cache:
           name: Restore node_modules cache
           key: networkjs-{{ .Branch }}-{{ checksum "yarn.lock" }}{{ .Environment.CACHE_KEY }}
