@@ -12,13 +12,13 @@ commands:
           path: ~/project
       - restore_cache:
           name: Restore node_modules cache
-          key: networkjs-{{ .Branch }}-{{ checksum "yarn.lock" }}{{ .Environment.CACHE_KEY }}
+          key: networkjs-{{ .Branch }}-{{ checksum "yarn.lock" }}
   save_env:
     description: "Saves dependencies"
     steps:
       - save_cache:
           name: Save node_modules cache
-          key: networkjs-{{ .Branch }}-{{ checksum "yarn.lock" }}{{ .Environment.CACHE_KEY }}
+          key: networkjs-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules/
 
