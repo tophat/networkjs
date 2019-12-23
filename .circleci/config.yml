@@ -8,10 +8,10 @@ commands:
   restore_env:
     description: "Prepares dependencies"
     steps:
-      - run: echo "yarn lock JACK"
-      - run: cat yarn.lock
       - checkout:
           path: ~/project
+      - run: echo "yarn lock JACK"
+      - run: head -10 yarn.lock
       - restore_cache:
           name: Restore node_modules cache
           key: networkjs-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -19,7 +19,7 @@ commands:
     description: "Saves dependencies"
     steps:
       - run: echo "yarn lock JACK"
-      - run: cat yarn.lock
+      - run: head -10 yarn.lock
       - save_cache:
           name: Save node_modules cache
           key: networkjs-{{ .Branch }}-{{ checksum "yarn.lock" }}
