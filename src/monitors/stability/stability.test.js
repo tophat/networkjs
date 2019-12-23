@@ -1,5 +1,5 @@
-import * as stability from '../../src/monitors/stability'
-import EventEmitter from '../../src/events/EventEmitter'
+import * as stability from '.'
+import EventEmitter from '../../events/EventEmitter'
 
 const delay = stability.delay
 const ping = stability.ping
@@ -103,40 +103,3 @@ describe('Stability Monitor', () => {
         // })
     })
 })
-
-/*
-class StabilityMonitor {
-
-    async run() {
-        let shouldDelay = true
-        const start = window.performance.now()
-        const success = await ping(this.resource)
-        if (success) {
-            if (window.performance.now() - start > this.durationThreshold) {
-                this.consecutiveSlowRequestCount++
-                if (this.consecutiveSlowRequestCount < this.requestThreshold) {
-                    shouldDelay = false
-                } else if (
-                    this.consecutiveSlowRequestCount ===
-                        this.requestThreshold &&
-                    !this.paused
-                ) {
-                    this.emitter.dispatchEvent(NetworkStatus.UNSTABLE)
-                }
-            } else {
-                if (
-                    this.consecutiveSlowRequestCount >= this.requestThreshold &&
-                    !this.paused
-                ) {
-                    this.emitter.dispatchEvent(NetworkStatus.STABLE)
-                }
-                this.consecutiveSlowRequestCount = 0
-            }
-        }
-        shouldDelay && (await delay(this.interval))
-        !this.paused && (await this.run())
-    }
-}
-
-export default StabilityMonitor
-*/
