@@ -1,5 +1,5 @@
-import Event from '../../src/events/Event'
-import EventEmitter from '../../src/events/EventEmitter'
+import Event from '../Event'
+import EventEmitter from '.'
 
 const eventName = 'test'
 

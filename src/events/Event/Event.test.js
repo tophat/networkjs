@@ -1,4 +1,4 @@
-import Event from '../../src/events/Event'
+import Event from '.'
 
 const eventName = 'test'
 
