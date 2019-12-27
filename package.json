@@ -1,5 +1,5 @@
 {
-  "name": "networkjs",
+  "name": "network-js",
   "version": "1.0.0",
   "description": "A utility to emit network connectivity events",
   "keywords": [

@@ -22,7 +22,8 @@ const _monitorService = (emitter, config) => {
 }
 
 const _monitorStability = (emitter, config) => {
-    if (!config || !config.resource) return null
+    if (!('performance' in window && 'PerformanceObserver' in window))
+        return null
 
     return new StabilityMonitor(emitter, config)
 }
