@@ -12,6 +12,7 @@ class StabilityMonitor {
         this.emitter = emitter
         this.runningRequestCount = runningRequestCount
         this.speedThreshold = speedThreshold
+        this.isStable = true
         this.run = this.run.bind(this)
         this.observer = new window.PerformanceObserver(this.run)
         this.initialize()
@@ -55,13 +56,15 @@ class StabilityMonitor {
                     overflowEntry.responseEnd - overflowEntry.responseStart
                 this.transferSizeTotal -= currentEntry.transferSize
 
-                // Determine network connectivity
-                if (
+                // Emit stability changes
+                const thresholdHit =
                     this.transferSizeTotal / this.durationTotal <
                     this.speedThreshold
-                ) {
+                if (this.isStable && thresholdHit) {
+                    this.isStable = false
                     this.emitter.dispatchEvent(NetworkStatus.UNSTABLE)
-                } else {
+                } else if (!this.isStable && !thresholdHit) {
+                    this.isStable = true
                     this.emitter.dispatchEvent(NetworkStatus.STABLE)
                 }
             }
