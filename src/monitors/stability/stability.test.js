@@ -1,105 +1,70 @@
-import * as stability from '.'
+import StabilityMonitor from '.'
 import EventEmitter from '../../events/EventEmitter'
 
-const delay = stability.delay
-const ping = stability.ping
-const StabilityMonitor = stability.default
-
 describe('Stability Monitor', () => {
-    describe('delay', () => {
-        it('waits the provided interval', () => {
-            jest.useFakeTimers()
-            delay(1000)
+    window.PerformanceObserver = jest.fn(() => ({
+        observe: jest.fn(),
+        disconnect: jest.fn(),
+    }))
 
-            expect(setTimeout).toHaveBeenCalledTimes(1)
-            expect(setTimeout).toHaveBeenLastCalledWith(
-                expect.any(Function),
-                1000,
-            )
+    let monitor
+    const emitter = new EventEmitter()
+
+    beforeEach(() => {
+        monitor = new StabilityMonitor(emitter, {
+            runningRequestCount: 5,
+            speedThreshold: 50,
         })
     })
 
-    describe('ping', () => {
-        it('returns true on fetch success', async () => {
-            global.fetch = jest
-                .fn()
-                .mockImplementation(() =>
-                    Promise.resolve({ ok: true, Id: '123' }),
-                )
-            const result = await ping('TEST')
-
-            expect(global.fetch).toHaveBeenCalledTimes(1)
-            expect(result).toBe(true)
-        })
-
-        it('returns false on fetch error', async () => {
-            global.fetch = jest.fn().mockImplementation(() => Promise.reject())
-            const result = await ping('TEST')
-
-            expect(global.fetch).toHaveBeenCalledTimes(1)
-            expect(result).toBe(false)
+    describe('constructor', () => {
+        it('initializes with the correct props', () => {
+            expect(monitor).toMatchSnapshot()
+            expect(window.PerformanceObserver).toHaveBeenCalled()
         })
     })
 
-    describe('StabilityMonitor', () => {
-        let monitor
-        const emitter = new EventEmitter()
+    describe('initialize', () => {
+        it('sets some default properties and starts observing', () => {
+            const observeSpy = jest.spyOn(monitor.observer, 'observe')
+            monitor.initialize()
 
-        beforeEach(() => {
-            monitor = new StabilityMonitor(emitter, {
-                resource: 'URL',
-                interval: 5000,
-                requestThreshold: 2000,
-                durationThreshold: 2,
+            expect(monitor.entryBuffer).toStrictEqual([])
+            expect(monitor.durationTotal).toBe(0)
+            expect(monitor.transferSizeTotal).toBe(0)
+            expect(observeSpy).toHaveBeenCalledWith({
+                entryTypes: ['resource'],
             })
         })
-
-        describe('constructor', () => {
-            it('initializes with the correct props', () => {
-                expect(monitor).toMatchSnapshot()
-            })
-        })
-
-        describe('initialize', () => {
-            it('sets some default properties and runs monitor', () => {
-                const runSpy = (StabilityMonitor.prototype.run = jest.fn())
-                monitor.initialize()
-
-                expect(monitor.consecutiveSlowRequestCount).toBe(0)
-                expect(monitor.paused).toBe(false)
-                expect(runSpy).toHaveBeenCalledTimes(1)
-            })
-        })
-
-        describe('pause', () => {
-            it('sets paused to true', () => {
-                monitor.pause()
-
-                expect(monitor.paused).toBe(true)
-            })
-        })
-
-        describe('resume', () => {
-            it('re-initializes monitor', () => {
-                const initializeSpy = (StabilityMonitor.prototype.initialize = jest.fn())
-                monitor.resume()
-
-                expect(monitor.consecutiveSlowRequestCount).toBe(0)
-                expect(monitor.paused).toBe(false)
-                expect(initializeSpy).toHaveBeenCalledTimes(1)
-            })
-        })
-
-        // describe('run', () => {
-        //     it('pings the provided resource', async () => {
-        //         const pingSpy = jest
-        //             .spyOn(stability, 'ping')
-        //             .mockImplementation(async () => false)
-        //         await monitor.run()
-
-        //         expect(pingSpy).toHaveBeenCalledTimes(1)
-        //         expect(pingSpy).toHaveBeenLastCalledWith('URL')
-        //     })
-        // })
     })
+
+    describe('pause', () => {
+        it('sets paused to true', () => {
+            const disconnectSpy = jest.spyOn(monitor.observer, 'disconnect')
+            monitor.pause()
+
+            expect(disconnectSpy).toHaveBeenCalled()
+        })
+    })
+
+    describe('resume', () => {
+        it('re-initializes monitor', () => {
+            const initializeSpy = (StabilityMonitor.prototype.initialize = jest.fn())
+            monitor.resume()
+
+            expect(initializeSpy).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    // describe('run', () => {
+    //     it('pings the provided resource', async () => {
+    //         const pingSpy = jest
+    //             .spyOn(stability, 'ping')
+    //             .mockImplementation(async () => false)
+    //         await monitor.run()
+
+    //         expect(pingSpy).toHaveBeenCalledTimes(1)
+    //         expect(pingSpy).toHaveBeenLastCalledWith('URL')
+    //     })
+    // })
 })

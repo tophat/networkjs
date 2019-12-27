@@ -1,15 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Stability Monitor StabilityMonitor constructor initializes with the correct props 1`] = `
+exports[`Stability Monitor constructor initializes with the correct props 1`] = `
 StabilityMonitor {
-  "consecutiveSlowRequestCount": 0,
-  "durationThreshold": 2,
+  "durationTotal": 0,
   "emitter": EventEmitter {
     "events": Object {},
   },
-  "interval": 5000,
-  "paused": false,
-  "requestThreshold": 2000,
-  "resource": "URL",
+  "entryBuffer": Array [],
+  "isStable": true,
+  "observer": Object {
+    "disconnect": [MockFunction],
+    "observe": [MockFunction] {
+      "calls": Array [
+        Array [
+          Object {
+            "entryTypes": Array [
+              "resource",
+            ],
+          },
+        ],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+      ],
+    },
+  },
+  "run": [Function],
+  "runningRequestCount": 5,
+  "speedThreshold": 50,
+  "transferSizeTotal": 0,
 }
 `;
