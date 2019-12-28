@@ -74,13 +74,14 @@ describe('Stability Monitor', () => {
             entryLength = VALID_ENTRY_LENGTH,
             entry = DEFAULT_ENTRY,
         ) => ({
-            getEntries: () => [{}].concat(Array(entryLength).fill(entry)),
+            getEntries: () => Array(entryLength).fill(entry),
         })
 
         it('discards entries missing information', () => {
-            monitor.run(makeList())
+            const invalidEntry = {}
+            monitor.run(makeList(VALID_ENTRY_LENGTH, invalidEntry))
 
-            expect(monitor.entryBuffer).toHaveLength(VALID_ENTRY_LENGTH)
+            expect(monitor.entryBuffer).toHaveLength(0)
         })
 
         it('pushes entries and adds them to totals', () => {
