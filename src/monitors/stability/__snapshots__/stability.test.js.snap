@@ -4,7 +4,9 @@ exports[`Stability Monitor constructor initializes with the correct props 1`] = 
 StabilityMonitor {
   "durationTotal": 0,
   "emitter": EventEmitter {
-    "events": Object {},
+    "addEventListener": [MockFunction],
+    "dispatchEvent": [MockFunction],
+    "registerEvent": [MockFunction],
   },
   "entryBuffer": Array [],
   "isStable": true,

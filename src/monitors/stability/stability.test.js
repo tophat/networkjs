@@ -1,5 +1,11 @@
 import StabilityMonitor from '.'
 import EventEmitter from '../../events/EventEmitter'
+import { NetworkStatus } from '../../constants'
+
+jest.mock('../../events/EventEmitter')
+
+const RUNNING_REQUEST_COUNT = 5
+const SPEED_THRESHOLD = 50
 
 describe('Stability Monitor', () => {
     window.PerformanceObserver = jest.fn(() => ({
@@ -12,8 +18,8 @@ describe('Stability Monitor', () => {
 
     beforeEach(() => {
         monitor = new StabilityMonitor(emitter, {
-            runningRequestCount: 5,
-            speedThreshold: 50,
+            runningRequestCount: RUNNING_REQUEST_COUNT,
+            speedThreshold: SPEED_THRESHOLD,
         })
     })
 
@@ -49,22 +55,84 @@ describe('Stability Monitor', () => {
 
     describe('resume', () => {
         it('re-initializes monitor', () => {
-            const initializeSpy = (StabilityMonitor.prototype.initialize = jest.fn())
+            const initializeSpy = jest.spyOn(monitor, 'initialize')
             monitor.resume()
 
             expect(initializeSpy).toHaveBeenCalledTimes(1)
         })
     })
 
-    // describe('run', () => {
-    //     it('pings the provided resource', async () => {
-    //         const pingSpy = jest
-    //             .spyOn(stability, 'ping')
-    //             .mockImplementation(async () => false)
-    //         await monitor.run()
+    describe('run', () => {
+        const VALID_ENTRY_LENGTH = RUNNING_REQUEST_COUNT - 1
+        const DEFAULT_ENTRY = {
+            transferSize: 500,
+            responseStart: 900,
+            responseEnd: 1000,
+        }
 
-    //         expect(pingSpy).toHaveBeenCalledTimes(1)
-    //         expect(pingSpy).toHaveBeenLastCalledWith('URL')
-    //     })
-    // })
+        const makeList = (
+            entryLength = VALID_ENTRY_LENGTH,
+            entry = DEFAULT_ENTRY,
+        ) => ({
+            getEntries: () => [{}].concat(Array(entryLength).fill(entry)),
+        })
+
+        it('discards entries missing information', () => {
+            monitor.run(makeList())
+
+            expect(monitor.entryBuffer).toHaveLength(VALID_ENTRY_LENGTH)
+        })
+
+        it('pushes entries and adds them to totals', () => {
+            monitor.run(makeList())
+
+            expect(monitor.durationTotal).toBe(
+                VALID_ENTRY_LENGTH *
+                    (DEFAULT_ENTRY.responseEnd - DEFAULT_ENTRY.responseStart),
+            )
+            expect(monitor.transferSizeTotal).toBe(
+                VALID_ENTRY_LENGTH * DEFAULT_ENTRY.transferSize,
+            )
+        })
+
+        it('Remove overflow entries from totals', () => {
+            monitor.run(makeList(RUNNING_REQUEST_COUNT + 1))
+
+            expect(monitor.durationTotal).toBe(
+                RUNNING_REQUEST_COUNT *
+                    (DEFAULT_ENTRY.responseEnd - DEFAULT_ENTRY.responseStart),
+            )
+            expect(monitor.transferSizeTotal).toBe(
+                RUNNING_REQUEST_COUNT * DEFAULT_ENTRY.transferSize,
+            )
+        })
+
+        it('Emits network events on stability change', () => {
+            monitor.run(
+                makeList(RUNNING_REQUEST_COUNT + 1, {
+                    transferSize: 500,
+                    responseStart: 900,
+                    responseEnd: 1000,
+                }),
+            )
+
+            expect(monitor.isStable).toBe(false)
+            expect(monitor.emitter.dispatchEvent).toHaveBeenCalledWith(
+                NetworkStatus.UNSTABLE,
+            )
+
+            monitor.run(
+                makeList(RUNNING_REQUEST_COUNT + 1, {
+                    transferSize: 50,
+                    responseStart: 90,
+                    responseEnd: 100,
+                }),
+            )
+
+            expect(monitor.isStable).toBe(true)
+            expect(monitor.emitter.dispatchEvent).toHaveBeenCalledWith(
+                NetworkStatus.STABLE,
+            )
+        })
+    })
 })
