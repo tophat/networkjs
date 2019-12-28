@@ -10,6 +10,7 @@ StabilityMonitor {
   },
   "entryBuffer": Array [],
   "isStable": true,
+  "maxBufferSize": 5,
   "observer": Object {
     "disconnect": [MockFunction],
     "observe": [MockFunction] {
@@ -31,7 +32,6 @@ StabilityMonitor {
     },
   },
   "run": [Function],
-  "runningRequestCount": 5,
   "speedThreshold": 50,
   "transferSizeTotal": 0,
 }

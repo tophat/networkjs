@@ -4,7 +4,7 @@ import { NetworkStatus } from '../../constants'
 
 jest.mock('../../events/EventEmitter')
 
-const RUNNING_REQUEST_COUNT = 5
+const MAX_BUFFER_SIZE = 5
 const SPEED_THRESHOLD = 50
 
 describe('Stability Monitor', () => {
@@ -18,7 +18,7 @@ describe('Stability Monitor', () => {
 
     beforeEach(() => {
         monitor = new StabilityMonitor(emitter, {
-            runningRequestCount: RUNNING_REQUEST_COUNT,
+            maxBufferSize: MAX_BUFFER_SIZE,
             speedThreshold: SPEED_THRESHOLD,
         })
     })
@@ -63,7 +63,7 @@ describe('Stability Monitor', () => {
     })
 
     describe('run', () => {
-        const VALID_ENTRY_LENGTH = RUNNING_REQUEST_COUNT - 1
+        const VALID_ENTRY_LENGTH = MAX_BUFFER_SIZE - 1
         const DEFAULT_ENTRY = {
             transferSize: 500,
             responseStart: 900,
@@ -96,20 +96,20 @@ describe('Stability Monitor', () => {
         })
 
         it('Remove overflow entries from totals', () => {
-            monitor.run(makeList(RUNNING_REQUEST_COUNT + 1))
+            monitor.run(makeList(MAX_BUFFER_SIZE + 1))
 
             expect(monitor.durationTotal).toBe(
-                RUNNING_REQUEST_COUNT *
+                MAX_BUFFER_SIZE *
                     (DEFAULT_ENTRY.responseEnd - DEFAULT_ENTRY.responseStart),
             )
             expect(monitor.transferSizeTotal).toBe(
-                RUNNING_REQUEST_COUNT * DEFAULT_ENTRY.transferSize,
+                MAX_BUFFER_SIZE * DEFAULT_ENTRY.transferSize,
             )
         })
 
         it('Emits network events on stability change', () => {
             monitor.run(
-                makeList(RUNNING_REQUEST_COUNT + 1, {
+                makeList(MAX_BUFFER_SIZE + 1, {
                     transferSize: 500,
                     responseStart: 900,
                     responseEnd: 1000,
@@ -122,7 +122,7 @@ describe('Stability Monitor', () => {
             )
 
             monitor.run(
-                makeList(RUNNING_REQUEST_COUNT + 1, {
+                makeList(MAX_BUFFER_SIZE + 1, {
                     transferSize: 50,
                     responseStart: 90,
                     responseEnd: 100,

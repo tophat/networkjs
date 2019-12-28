@@ -5,12 +5,12 @@ class StabilityMonitor {
     constructor(
         emitter,
         {
-            runningRequestCount = StabilityDefaults.RUNNING_REQUEST_COUNT,
+            maxBufferSize = StabilityDefaults.MAX_BUFFER_SIZE,
             speedThreshold = StabilityDefaults.SPEED_THRESHOLD,
         },
     ) {
         this.emitter = emitter
-        this.runningRequestCount = runningRequestCount
+        this.maxBufferSize = maxBufferSize
         this.speedThreshold = speedThreshold
         this.isStable = true
         this.run = this.run.bind(this)
@@ -50,7 +50,7 @@ class StabilityMonitor {
             this.transferSizeTotal += currentEntry.transferSize
 
             // Remove overflow entry (if any) from totals
-            if (this.entryBuffer.length > this.runningRequestCount) {
+            if (this.entryBuffer.length > this.maxBufferSize) {
                 const overflowEntry = this.entryBuffer.shift()
                 this.durationTotal -=
                     overflowEntry.responseEnd - overflowEntry.responseStart
