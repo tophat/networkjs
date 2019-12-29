@@ -23,11 +23,21 @@
       "contributions": [
         "infra"
       ]
+    },
+    {
+      "login": "StealthGiraffe",
+      "name": "StealthGiraffe",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/23384568?v=4",
+      "profile": "https://github.com/StealthGiraffe",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
   "projectName": "networkjs",
   "projectOwner": "tophat",
   "repoType": "github",
-  "repoHost": "https://github.com"
+  "repoHost": "https://github.com",
+  "skipCi": true
 }
