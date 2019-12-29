@@ -84,9 +84,10 @@ describe('Stability Monitor', () => {
             expect(monitor.entryBuffer).toHaveLength(0)
         })
 
-        it('pushes entries and adds them to totals', () => {
+        it('pushes entries onto buffer and adds them to totals', () => {
             monitor.run(makeList())
 
+            expect(monitor.entryBuffer).toHaveLength(VALID_ENTRY_LENGTH)
             expect(monitor.durationTotal).toBe(
                 VALID_ENTRY_LENGTH *
                     (DEFAULT_ENTRY.responseEnd - DEFAULT_ENTRY.responseStart),
@@ -96,9 +97,10 @@ describe('Stability Monitor', () => {
             )
         })
 
-        it('Remove overflow entries from totals', () => {
+        it('Removes overflow entries from buffer and totals', () => {
             monitor.run(makeList(MAX_BUFFER_SIZE + 1))
 
+            expect(monitor.entryBuffer).toHaveLength(MAX_BUFFER_SIZE)
             expect(monitor.durationTotal).toBe(
                 MAX_BUFFER_SIZE *
                     (DEFAULT_ENTRY.responseEnd - DEFAULT_ENTRY.responseStart),
@@ -109,11 +111,13 @@ describe('Stability Monitor', () => {
         })
 
         it('Emits network events on stability change', () => {
+            expect(monitor.isStable).toBe(true)
+
             monitor.run(
                 makeList(MAX_BUFFER_SIZE + 1, {
                     transferSize: 500,
-                    responseStart: 900,
-                    responseEnd: 1000,
+                    responseStart: 10,
+                    responseEnd: 2010,
                 }),
             )
 
@@ -124,9 +128,9 @@ describe('Stability Monitor', () => {
 
             monitor.run(
                 makeList(MAX_BUFFER_SIZE + 1, {
-                    transferSize: 50,
-                    responseStart: 90,
-                    responseEnd: 100,
+                    transferSize: 500,
+                    responseStart: 10,
+                    responseEnd: 11,
                 }),
             )
 

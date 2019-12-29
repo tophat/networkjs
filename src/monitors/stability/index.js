@@ -33,6 +33,35 @@ class StabilityMonitor {
         this.initialize()
     }
 
+    _addEntry(entry) {
+        const { responseStart, responseEnd, transferSize } = entry
+        const duration = responseEnd - responseStart
+        this.entryBuffer.push({
+            duration,
+            transferSize,
+        })
+        this.durationTotal += duration
+        this.transferSizeTotal += transferSize
+    }
+
+    _removeOverflowEntry() {
+        const { duration, transferSize } = this.entryBuffer.shift()
+        this.durationTotal -= duration
+        this.transferSizeTotal -= transferSize
+    }
+
+    _emitStabilityChanges() {
+        const isThresholdHit =
+            this.transferSizeTotal / this.durationTotal < this.speedThreshold
+        if (this.isStable && isThresholdHit) {
+            this.isStable = false
+            this.emitter.dispatchEvent(NetworkStatus.UNSTABLE)
+        } else if (!this.isStable && !isThresholdHit) {
+            this.isStable = true
+            this.emitter.dispatchEvent(NetworkStatus.STABLE)
+        }
+    }
+
     run(list) {
         for (const currentEntry of list.getEntries()) {
             // Discard entries with missing information (CORS)
@@ -43,30 +72,11 @@ class StabilityMonitor {
             )
                 continue
 
-            // Add entries to buffer and totals
-            this.entryBuffer.push(currentEntry)
-            this.durationTotal +=
-                currentEntry.responseEnd - currentEntry.responseStart
-            this.transferSizeTotal += currentEntry.transferSize
+            this._addEntry(currentEntry)
 
-            // Remove overflow entry (if any) from totals
             if (this.entryBuffer.length > this.maxBufferSize) {
-                const overflowEntry = this.entryBuffer.shift()
-                this.durationTotal -=
-                    overflowEntry.responseEnd - overflowEntry.responseStart
-                this.transferSizeTotal -= currentEntry.transferSize
-
-                // Emit stability changes
-                const thresholdHit =
-                    this.transferSizeTotal / this.durationTotal <
-                    this.speedThreshold
-                if (this.isStable && thresholdHit) {
-                    this.isStable = false
-                    this.emitter.dispatchEvent(NetworkStatus.UNSTABLE)
-                } else if (!this.isStable && !thresholdHit) {
-                    this.isStable = true
-                    this.emitter.dispatchEvent(NetworkStatus.STABLE)
-                }
+                this._removeOverflowEntry()
+                this._emitStabilityChanges()
             }
         }
     }
