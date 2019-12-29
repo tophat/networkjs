@@ -1,105 +1,143 @@
-import * as stability from '.'
+import StabilityMonitor from '.'
 import EventEmitter from '../../events/EventEmitter'
+import { NetworkStatus } from '../../constants'
 
-const delay = stability.delay
-const ping = stability.ping
-const StabilityMonitor = stability.default
+jest.mock('../../events/EventEmitter')
+
+const MAX_BUFFER_SIZE = 5
+const SPEED_THRESHOLD = 50
 
 describe('Stability Monitor', () => {
-    describe('delay', () => {
-        it('waits the provided interval', () => {
-            jest.useFakeTimers()
-            delay(1000)
+    window.PerformanceObserver = jest.fn(() => ({
+        observe: jest.fn(),
+        disconnect: jest.fn(),
+    }))
 
-            expect(setTimeout).toHaveBeenCalledTimes(1)
-            expect(setTimeout).toHaveBeenLastCalledWith(
-                expect.any(Function),
-                1000,
+    let monitor
+    const emitter = new EventEmitter()
+
+    beforeEach(() => {
+        monitor = new StabilityMonitor(emitter, {
+            maxBufferSize: MAX_BUFFER_SIZE,
+            speedThreshold: SPEED_THRESHOLD,
+        })
+    })
+
+    describe('constructor', () => {
+        it('initializes with the correct props', () => {
+            expect(monitor).toMatchSnapshot()
+            expect(window.PerformanceObserver).toHaveBeenCalled()
+        })
+    })
+
+    describe('initialize', () => {
+        it('sets some default properties and starts observing', () => {
+            const observeSpy = jest.spyOn(monitor.observer, 'observe')
+            monitor.initialize()
+
+            expect(monitor.entryBuffer).toStrictEqual([])
+            expect(monitor.durationTotal).toBe(0)
+            expect(monitor.transferSizeTotal).toBe(0)
+            expect(observeSpy).toHaveBeenCalledWith({
+                entryTypes: ['resource'],
+            })
+        })
+    })
+
+    describe('pause', () => {
+        it('sets paused to true', () => {
+            const disconnectSpy = jest.spyOn(monitor.observer, 'disconnect')
+            monitor.pause()
+
+            expect(disconnectSpy).toHaveBeenCalled()
+        })
+    })
+
+    describe('resume', () => {
+        it('re-initializes monitor', () => {
+            const initializeSpy = jest.spyOn(monitor, 'initialize')
+            monitor.resume()
+
+            expect(initializeSpy).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('run', () => {
+        const VALID_ENTRY_LENGTH = MAX_BUFFER_SIZE - 1
+        const DEFAULT_ENTRY = {
+            transferSize: 500,
+            responseStart: 900,
+            responseEnd: 1000,
+        }
+
+        const makeList = (
+            entryLength = VALID_ENTRY_LENGTH,
+            entry = DEFAULT_ENTRY,
+        ) => ({
+            getEntries: () => Array(entryLength).fill(entry),
+        })
+
+        it('discards entries missing information', () => {
+            const invalidEntry = {}
+            monitor.run(makeList(VALID_ENTRY_LENGTH, invalidEntry))
+
+            expect(monitor.entryBuffer).toHaveLength(0)
+        })
+
+        it('pushes entries onto buffer and adds them to totals', () => {
+            monitor.run(makeList())
+
+            expect(monitor.entryBuffer).toHaveLength(VALID_ENTRY_LENGTH)
+            expect(monitor.durationTotal).toBe(
+                VALID_ENTRY_LENGTH *
+                    (DEFAULT_ENTRY.responseEnd - DEFAULT_ENTRY.responseStart),
+            )
+            expect(monitor.transferSizeTotal).toBe(
+                VALID_ENTRY_LENGTH * DEFAULT_ENTRY.transferSize,
             )
         })
-    })
 
-    describe('ping', () => {
-        it('returns true on fetch success', async () => {
-            global.fetch = jest
-                .fn()
-                .mockImplementation(() =>
-                    Promise.resolve({ ok: true, Id: '123' }),
-                )
-            const result = await ping('TEST')
+        it('Removes overflow entries from buffer and totals', () => {
+            monitor.run(makeList(MAX_BUFFER_SIZE + 1))
 
-            expect(global.fetch).toHaveBeenCalledTimes(1)
-            expect(result).toBe(true)
+            expect(monitor.entryBuffer).toHaveLength(MAX_BUFFER_SIZE)
+            expect(monitor.durationTotal).toBe(
+                MAX_BUFFER_SIZE *
+                    (DEFAULT_ENTRY.responseEnd - DEFAULT_ENTRY.responseStart),
+            )
+            expect(monitor.transferSizeTotal).toBe(
+                MAX_BUFFER_SIZE * DEFAULT_ENTRY.transferSize,
+            )
         })
 
-        it('returns false on fetch error', async () => {
-            global.fetch = jest.fn().mockImplementation(() => Promise.reject())
-            const result = await ping('TEST')
+        it('Emits network events on stability change', () => {
+            expect(monitor.isStable).toBe(true)
 
-            expect(global.fetch).toHaveBeenCalledTimes(1)
-            expect(result).toBe(false)
+            monitor.run(
+                makeList(MAX_BUFFER_SIZE + 1, {
+                    transferSize: 500,
+                    responseStart: 10,
+                    responseEnd: 2010,
+                }),
+            )
+
+            expect(monitor.isStable).toBe(false)
+            expect(monitor.emitter.dispatchEvent).toHaveBeenCalledWith(
+                NetworkStatus.UNSTABLE,
+            )
+
+            monitor.run(
+                makeList(MAX_BUFFER_SIZE + 1, {
+                    transferSize: 500,
+                    responseStart: 10,
+                    responseEnd: 11,
+                }),
+            )
+
+            expect(monitor.isStable).toBe(true)
+            expect(monitor.emitter.dispatchEvent).toHaveBeenCalledWith(
+                NetworkStatus.STABLE,
+            )
         })
-    })
-
-    describe('StabilityMonitor', () => {
-        let monitor
-        const emitter = new EventEmitter()
-
-        beforeEach(() => {
-            monitor = new StabilityMonitor(emitter, {
-                resource: 'URL',
-                interval: 5000,
-                requestThreshold: 2000,
-                durationThreshold: 2,
-            })
-        })
-
-        describe('constructor', () => {
-            it('initializes with the correct props', () => {
-                expect(monitor).toMatchSnapshot()
-            })
-        })
-
-        describe('initialize', () => {
-            it('sets some default properties and runs monitor', () => {
-                const runSpy = (StabilityMonitor.prototype.run = jest.fn())
-                monitor.initialize()
-
-                expect(monitor.consecutiveSlowRequestCount).toBe(0)
-                expect(monitor.paused).toBe(false)
-                expect(runSpy).toHaveBeenCalledTimes(1)
-            })
-        })
-
-        describe('pause', () => {
-            it('sets paused to true', () => {
-                monitor.pause()
-
-                expect(monitor.paused).toBe(true)
-            })
-        })
-
-        describe('resume', () => {
-            it('re-initializes monitor', () => {
-                const initializeSpy = (StabilityMonitor.prototype.initialize = jest.fn())
-                monitor.resume()
-
-                expect(monitor.consecutiveSlowRequestCount).toBe(0)
-                expect(monitor.paused).toBe(false)
-                expect(initializeSpy).toHaveBeenCalledTimes(1)
-            })
-        })
-
-        // describe('run', () => {
-        //     it('pings the provided resource', async () => {
-        //         const pingSpy = jest
-        //             .spyOn(stability, 'ping')
-        //             .mockImplementation(async () => false)
-        //         await monitor.run()
-
-        //         expect(pingSpy).toHaveBeenCalledTimes(1)
-        //         expect(pingSpy).toHaveBeenLastCalledWith('URL')
-        //     })
-        // })
     })
 })

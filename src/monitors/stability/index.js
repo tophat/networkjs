@@ -1,80 +1,84 @@
 import { NetworkStatus } from '../../constants'
 import { StabilityDefaults } from './Stability.constants'
 
-export const delay = async interval => {
-    return await new Promise(done => setTimeout(() => done(), interval))
-}
-
-export const ping = async resource => {
-    try {
-        await fetch(resource)
-    } catch (e) {
-        return false
-    }
-    return true
-}
-
 class StabilityMonitor {
     constructor(
         emitter,
         {
-            resource,
-            interval = StabilityDefaults.INTERVAL,
-            requestThreshold = StabilityDefaults.REQUEST_THRESHOLD,
-            durationThreshold = StabilityDefaults.DURATION_THRESHOLD,
+            maxBufferSize = StabilityDefaults.MAX_BUFFER_SIZE,
+            speedThreshold = StabilityDefaults.SPEED_THRESHOLD,
         },
     ) {
         this.emitter = emitter
-        this.resource = resource
-        this.interval = interval
-        this.requestThreshold = requestThreshold
-        this.durationThreshold = durationThreshold
-
+        this.maxBufferSize = maxBufferSize
+        this.speedThreshold = speedThreshold
+        this.isStable = true
+        this.run = this.run.bind(this)
+        this.observer = new window.PerformanceObserver(this.run)
         this.initialize()
     }
 
     initialize() {
-        this.consecutiveSlowRequestCount = 0
-        this.paused = false
-        this.run()
+        this.entryBuffer = []
+        this.durationTotal = 0
+        this.transferSizeTotal = 0
+        this.observer.observe({ entryTypes: ['resource'] })
     }
 
     pause() {
-        this.paused = true
+        this.observer.disconnect()
     }
 
     resume() {
         this.initialize()
     }
 
-    async run() {
-        let shouldDelay = true
-        const start = window.performance.now()
-        const success = await ping(this.resource)
-        if (success) {
-            if (window.performance.now() - start > this.durationThreshold) {
-                this.consecutiveSlowRequestCount++
-                if (this.consecutiveSlowRequestCount < this.requestThreshold) {
-                    shouldDelay = false
-                } else if (
-                    this.consecutiveSlowRequestCount ===
-                        this.requestThreshold &&
-                    !this.paused
-                ) {
-                    this.emitter.dispatchEvent(NetworkStatus.UNSTABLE)
-                }
-            } else {
-                if (
-                    this.consecutiveSlowRequestCount >= this.requestThreshold &&
-                    !this.paused
-                ) {
-                    this.emitter.dispatchEvent(NetworkStatus.STABLE)
-                }
-                this.consecutiveSlowRequestCount = 0
+    _addEntry(entry) {
+        const { responseStart, responseEnd, transferSize } = entry
+        const duration = responseEnd - responseStart
+        this.entryBuffer.push({
+            duration,
+            transferSize,
+        })
+        this.durationTotal += duration
+        this.transferSizeTotal += transferSize
+    }
+
+    _removeOverflowEntry() {
+        const { duration, transferSize } = this.entryBuffer.shift()
+        this.durationTotal -= duration
+        this.transferSizeTotal -= transferSize
+    }
+
+    _emitStabilityChanges() {
+        const isThresholdHit =
+            this.transferSizeTotal / this.durationTotal < this.speedThreshold
+        if (this.isStable && isThresholdHit) {
+            this.isStable = false
+            this.emitter.dispatchEvent(NetworkStatus.UNSTABLE)
+        } else if (!this.isStable && !isThresholdHit) {
+            this.isStable = true
+            this.emitter.dispatchEvent(NetworkStatus.STABLE)
+        }
+    }
+
+    run(list) {
+        for (const currentEntry of list.getEntries()) {
+            // Discard entries with missing information (CORS)
+            if (
+                !currentEntry.transferSize ||
+                !currentEntry.responseEnd ||
+                !currentEntry.responseStart
+            )
+                continue
+
+            this._addEntry(currentEntry)
+
+            if (this.entryBuffer.length > this.maxBufferSize) {
+                this._removeOverflowEntry()
+                this._emitStabilityChanges()
             }
         }
-        shouldDelay && (await delay(this.interval))
-        !this.paused && (await this.run())
     }
 }
 
