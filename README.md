@@ -6,75 +6,85 @@ A utility library that emits network connectivity events
 ## Installation
 
 ```
-yarn add networkjs
+yarn add network-js
 ```
 
 or
 
 ```
-npm install networkjs
+npm install network-js
 ```
 
-This library has no dependencies.
+This library has no external dependencies.
 
 ## Usage
 
 ```javascript
-import Network from 'networkjs'
+import Network from 'network-js'
 ```
 
 If you're not using ECMAScript modules:
 
 ```javascript
-const Network = require('networkjs').default
+const Network = require('network-js').default
 ```
 
-This library supports three main use cases:
-
-### Network: Detecting browser offline/online events
-
-These events are enabled by default and do not require any additional configuration.
-
-### Stability: Detecting network unstable/stable events
-
-If you want to receive network stability events, you need to supply a URL to the resource you wish to ping. Please keep in mind that the resource you provide will affect the duration of the ping. If you choose a smaller/larger resource, you should decrease/increase the `durationThreshold` (see below).
+Then initialize the library with your preferred configuration described below.
 
 ```javascript
-{
-    stability: {
-        resource: 'https://path.to.your.resource',
-        ...
-    }
-}
+const Net = new Network({
+    service: { /* service config */ },
+    stability: { /* stability config */ }
+})
 ```
 
-`resource`: Resource to ping **(required)**<br />
-`interval`: Ping interval **(optional, default 5000ms)**<br />
-`durationThreshold`: Maximum duration that dictates a slow request **(optional, default 2000ms)**<br />
-`requestThreshold`: Minimum number of consecutive slow requests that dictate an unstable network **(optional, default 2)**<br />
+This library monitors for three types of network events:
 
-### Service: Detecting 3rd party service degraded/resolved events
+## Network: Browser offline/online events
 
-If you want to receive service stability events, you can supply an array of URL prefixes for the services you wish to track.
+### Events
+
+- `offline`: Fired when the browser loses network connection
+- `online`: Fired when the browser reconnects
+
+## Stability: Network unstable/stable events
+
+### Events
+
+- `unstable`: Fired when the network speed goes under a given threshold
+- `stable`: Fired when the network speed goes back above the given threshold
+
+### Options
+
+- `maxBufferSize`: The number of recent performance entries to track at any given time **(optional, default 10)**<br />
+- `speedThreshold`: The speed threshold (in KBps) that determines network stability **(optional, default 100)**<br />
+
+### Notes
+
+Avoid using a large value for `maxBufferSize` (>100) as performance entries are stored in memory. The smaller the number you provide, the less accurate the monitor may be. The larger the number you provide, the longer it will take to propagate changes in network stability. You should play around with this value until you find a good balance.
+
+This monitor uses the `window.PerformanceObserver` API which is [not supported in Internet Explorer](https://caniuse.com/#feat=mdn-api_performanceobserver). As such, this monitor will be disabled in Internet Explorer.
+
+## Service: Service degraded/resolved events
+
+### Events
+
+- `degraded`: Fired when a service that matches a given prefix becomes degraded
+- `resolved`: Fired when a service degradation is resolved
+
+### Options
+
+- `prefixes`: Array of URL prefixes (regex strings) to track **(optional, defaults to tracking any failures)**<br />
+- `statuses`: Array of statuses that determine a service degradation **(optional, default [502, 503, 504])**<br />
+- `failureThreshold`: Minimum number of consecutive failures that determine if a service is degraded **(optional, default 2)**<br />
+- `decrementTime`: Amount of time until a failure is dismissed **(optional, default 10000ms)**<br />
+
+### Notes
+
+This monitor needs to be hooked into your current HTTP library. For each request, you feed it the request URL and the response status code, and it will emit events upon hitting the given failure threshold.
 
 ```javascript
-{
-    service: {
-        prefixes: ['prefix1', 'prefix2'],
-        ...
-    }
-}
-```
-
-`prefixes`: Array of URL prefixes to track **(optional, defaults to tracking any failures)**<br />
-`statuses`: Array of statuses dictating a service degradation **(optional, default [502, 503, 504])**<br />
-`failureThreshold`: Minimum number of consecutive failures that dictate a degraded service **(optional, default 2)**<br />
-`decrementTime`: Amount of time until a failure is dismissed **(optional, default 10000ms)**<br />
-
-This monitor can be hooked into your current HTTP library. For each request, you feed it the request URL and the response status code, and it will emit events upon hitting the given failure threshold.
-
-```javascript
-const Net = new Network({ service = {...} })
+const Net = new Network({ service = { /* service config */ } })
 
 this.axios.interceptors.response.use(
     success => success,
@@ -88,8 +98,6 @@ this.axios.interceptors.response.use(
 ## Example
 
 ### Network
-
-You can omit any configuration to just receive network online/offline events.
 
 ```javascript
 const Net = new Network()
@@ -108,7 +116,8 @@ Net.on('offline', () => {
 ```javascript
 const Net = new Network({
     stability: {
-        resource: 'https://path.to.your.resource'
+        maxBufferSize: 15,
+        speedThreshold: 150
     }
 })
 
@@ -145,7 +154,8 @@ Net.on('resolved', (service) => {
 ```javascript
 const Net = new Network({
     stability: {
-        resource: 'https://path.to.your.resource'
+        maxBufferSize: 15,
+        speedThreshold: 150
     },
     services: {
         prefixes: ['api/v1/resource1', 'api/v2/resource2'],
@@ -154,7 +164,7 @@ const Net = new Network({
 })
 
 Net.all((event) => {
-    console.log('Network -', event)
+    console.log(`Network - ${event}`)
 })
 ```
 
