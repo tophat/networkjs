@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Network Monitor NetworkMonitor constructor initializes with the correct props 1`] = `
+NetworkMonitor {
+  "emitOfflineEvent": [Function],
+  "emitOnlineEvent": [Function],
+  "emitter": EventEmitter {
+    "events": Object {},
+  },
+}
+`;
