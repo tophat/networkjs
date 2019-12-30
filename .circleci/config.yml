@@ -28,7 +28,7 @@ jobs:
     working_directory: ~/project
     steps:
       - checkout
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - save_env
   build:
     <<: *docker_defaults
