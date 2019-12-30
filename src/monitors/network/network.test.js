@@ -13,7 +13,7 @@ describe('Network Monitor', () => {
         afterEach(() => {
             jest.clearAllMocks()
         })
-      
+
         describe('constructor', () => {
             it('initializes with the correct props', () => {
                 expect(monitor).toMatchSnapshot()
