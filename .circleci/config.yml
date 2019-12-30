@@ -18,7 +18,7 @@ commands:
     description: "Saves dependencies"
     steps:
       - checkout:
-        path: ~/project
+          path: ~/project
       - run: yarn install
       - save_cache:
           name: Save node_modules cache
