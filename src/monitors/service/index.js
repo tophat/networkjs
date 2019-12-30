@@ -13,24 +13,9 @@ class ServiceMonitor {
     ) {
         this.emitter = emitter
         this.prefixes = prefixes
-        if (
-            Array.isArray(prefixes) &&
-            prefixes.every(p => typeof p === 'string')
-        ) {
-            this.isPrefixArray = true
-            this.regexes = prefixes.map(p => new RegExp(p))
-        } else if (prefixes === '*') {
-            this.isPrefixArray = false
-        } else {
-            throw new Error(`prefixes must be an array or '*'`)
-        }
+        this.regexes = prefixes.map(p => new RegExp(p))
         this.statuses = statuses
-
-        if (typeof failureThreshold === 'number') {
-            this.failureThreshold = failureThreshold
-        } else {
-            throw new Error(`failureThreshold must be a number`)
-        }
+        this.failureThreshold = failureThreshold
         this.decrementTime = decrementTime
 
         this.initialize()
@@ -39,18 +24,13 @@ class ServiceMonitor {
     initialize() {
         this.paused = false
         this.failureCounts = {}
-        if (this.isPrefixArray) {
-            for (let i = 0; i < this.prefixes.length; i++) {
-                this.failureCounts[this.prefixes[i]] = 0
-            }
-        } else {
-            this.failureCount = 0
+
+        for (const prefix of this.prefixes) {
+            this.failureCounts[prefix] = 0
         }
     }
 
     getPrefixForUrl(url) {
-        if (!this.isPrefixArray) return undefined
-
         for (let i = 0; i < this.regexes.length; i++) {
             if (this.regexes[i].test(url)) {
                 return this.prefixes[i]
@@ -60,25 +40,15 @@ class ServiceMonitor {
     }
 
     getCountForPrefix(prefix) {
-        return this.isPrefixArray
-            ? this.failureCounts[prefix]
-            : this.failureCount
+        return this.failureCounts[prefix]
     }
 
     increment(prefix) {
-        if (this.isPrefixArray) {
-            this.failureCounts[prefix]++
-        } else {
-            this.failureCount++
-        }
+        this.failureCounts[prefix]++
     }
 
     decrement(prefix) {
-        if (this.isPrefixArray) {
-            this.failureCounts[prefix]--
-        } else {
-            this.failureCount--
-        }
+        this.failureCounts[prefix]--
     }
 
     waitAndDecrement(prefix) {

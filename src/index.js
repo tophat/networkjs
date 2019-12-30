@@ -16,27 +16,32 @@ const _monitorNetwork = emitter => {
 }
 
 const _monitorService = (emitter, config) => {
-    if (!config) return null
-
     return new ServiceMonitor(emitter, config)
 }
 
 const _monitorStability = (emitter, config) => {
-    if (!config || !config.resource) return null
+    if (!('performance' in window && 'PerformanceObserver' in window))
+        return null
 
     return new StabilityMonitor(emitter, config)
 }
 
 class Network {
-    constructor({ service = null, stability = null } = {}) {
+    constructor({
+        service: serviceConfig = {},
+        stability: stabilityConfig = {},
+    } = {}) {
         this.eventEmitter = new EventEmitter()
         _registerNetworkStatusEvents(this.eventEmitter)
         this.monitors = {
             [Monitor.NETWORK]: _monitorNetwork(this.eventEmitter),
-            [Monitor.SERVICE]: _monitorService(this.eventEmitter, service),
+            [Monitor.SERVICE]: _monitorService(
+                this.eventEmitter,
+                serviceConfig,
+            ),
             [Monitor.STABILITY]: _monitorStability(
                 this.eventEmitter,
-                stability,
+                stabilityConfig,
             ),
         }
     }
