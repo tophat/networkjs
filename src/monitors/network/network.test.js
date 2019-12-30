@@ -10,6 +10,10 @@ describe('Network Monitor', () => {
             monitor = new NetworkMonitor(emitter)
         })
 
+        afterEach(() => {
+            jest.clearAllMocks()
+        })
+
         describe('constructor', () => {
             it('initializes with the correct props', () => {
                 expect(monitor).toMatchSnapshot()
@@ -40,7 +44,7 @@ describe('Network Monitor', () => {
                 const initializeSpy = jest.spyOn(monitor, 'initialize')
                 monitor.resume()
 
-                expect(window.removeEventListener).toHaveBeenCalledTimes(2)
+                expect(window.addEventListener).toHaveBeenCalledTimes(2)
                 expect(initializeSpy).toHaveBeenCalled()
             })
         })
