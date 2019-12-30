@@ -34,6 +34,7 @@ jobs:
     <<: *docker_defaults
     working_directory: ~/project
     steps:
+      - run: yarn install
       - restore_env
       - run: yarn build
   test:
