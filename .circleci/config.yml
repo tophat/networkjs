@@ -10,16 +10,12 @@ commands:
     steps:
       - checkout:
           path: ~/project
-      - run: yarn install
       - restore_cache:
           name: Restore node_modules cache
           key: networkjs-{{ .Branch }}-{{ checksum "yarn.lock" }}
   save_env:
     description: "Saves dependencies"
     steps:
-      - checkout:
-          path: ~/project
-      - run: yarn install
       - save_cache:
           name: Save node_modules cache
           key: networkjs-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -31,6 +27,8 @@ jobs:
     <<: *docker_defaults
     working_directory: ~/project
     steps:
+      - checkout
+      - run: yarn install --frozen-lockfile
       - save_env
   build:
     <<: *docker_defaults
