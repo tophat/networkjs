@@ -20,8 +20,7 @@ const _monitorService = (emitter, config) => {
 }
 
 const _monitorStability = (emitter, config) => {
-    if (!('performance' in window && 'PerformanceObserver' in window))
-        return null
+    if (!('PerformanceObserver' in window)) return null
 
     return new StabilityMonitor(emitter, config)
 }
@@ -63,10 +62,6 @@ class Network {
     }
 
     serviceError(url, status) {
-        if (!this.monitors[Monitor.SERVICE]) {
-            throw new Error(`Service monitor not configured`)
-        }
-
         this.monitors[Monitor.SERVICE].handleError(url, status)
     }
 

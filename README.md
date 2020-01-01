@@ -74,7 +74,9 @@ This monitor uses the `window.PerformanceObserver` API which is [not supported i
 
 ### Options
 
-- `prefixes`: Array of URL prefixes (regex strings) to track **(optional, defaults to tracking any failures)**<br />
+- `definitions`: Array of service definitions to track **(optional, defaults to tracking any failures)**<br />
+    - `name`: Name of the service
+    - `regex`: The `RegExp` to test against
 - `statuses`: Array of statuses that determine a service degradation **(optional, default [502, 503, 504])**<br />
 - `failureThreshold`: Minimum number of consecutive failures that determine if a service is degraded **(optional, default 2)**<br />
 - `decrementTime`: Amount of time until a failure is dismissed **(optional, default 10000ms)**<br />
@@ -95,7 +97,7 @@ this.axios.interceptors.response.use(
 )
 ```
 
-## Example
+## Examples
 
 ### Network
 
@@ -135,17 +137,26 @@ Net.on('stable', () => {
 ```javascript
 const Net = new Network({
     services: {
-        prefixes: ['api/v1/resource1', 'api/v2/resource2'],
+        definitions: [
+            {
+                name: 'resource 1',
+                regex: new RegExp('api/v1/resource1')
+            },
+            {
+                name: 'resource 2',
+                regex: new RegExp('api/v2/resource2')
+            }
+        ],
         statuses: [500, 502, 503, 504]
     }
 })
 
-Net.on('degraded', (service) => {
-    console.log(`Network - ${service} - DEGRADED`)
+Net.on('degraded', (serviceName) => {
+    console.log(`Network - ${serviceName} - DEGRADED`)
 })
 
-Net.on('resolved', (service) => {
-    console.log(`Network - ${service} - RESOLVED`)
+Net.on('resolved', (serviceName) => {
+    console.log(`Network - ${serviceName} - RESOLVED`)
 })
 ```
 
