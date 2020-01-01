@@ -9,7 +9,7 @@ class ServiceMonitor {
             statuses = ServiceDefaults.STATUSES,
             failureThreshold = ServiceDefaults.FAILURE_THRESHOLD,
             decrementTime = ServiceDefaults.DECREMENT_TIME,
-        },
+        } = {},
     ) {
         this.emitter = emitter
         this.definitions = definitions

@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Service Monitor constructor initializes with the correct props 1`] = `
+ServiceMonitor {
+  "decrementTime": 5000,
+  "definitions": Array [
+    Object {
+      "name": "*",
+      "regex": /\\.\\*/,
+    },
+  ],
+  "emitter": EventEmitter {
+    "addEventListener": [MockFunction],
+    "dispatchEvent": [MockFunction],
+    "registerEvent": [MockFunction],
+  },
+  "failureCounts": Object {
+    "*": 0,
+  },
+  "failureThreshold": 2,
+  "paused": false,
+  "statuses": Array [
+    502,
+    503,
+    504,
+  ],
+}
+`;
