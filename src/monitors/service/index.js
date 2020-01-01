@@ -29,17 +29,13 @@ class ServiceMonitor {
         }
     }
 
-    getPrefixForUrl(url) {
+    getServiceForUrl(url) {
         for (const d of this.definitions) {
             if (d.regex.test(url)) {
                 return d.name
             }
         }
         return undefined
-    }
-
-    getCountForPrefix(name) {
-        return this.failureCounts[name]
     }
 
     increment(name) {
@@ -54,8 +50,7 @@ class ServiceMonitor {
         setTimeout(() => {
             if (!this.paused) {
                 this.decrement(name)
-                const count = this.getCountForPrefix(name)
-                if (count === this.failureThreshold - 1) {
+                if (this.failureCounts[name] === this.failureThreshold - 1) {
                     this.emitter.dispatchEvent(NetworkStatus.RESOLVED, name)
                 }
             }
@@ -64,10 +59,9 @@ class ServiceMonitor {
 
     handleError(url, status) {
         if (!this.paused && this.statuses.includes(status)) {
-            const name = this.getPrefixForUrl(url)
+            const name = this.getServiceForUrl(url)
             this.increment(name)
-            const count = this.getCountForPrefix(name)
-            if (count === this.failureThreshold) {
+            if (this.failureCounts[name] === this.failureThreshold) {
                 this.emitter.dispatchEvent(NetworkStatus.DEGRADED, name)
             }
             this.waitAndDecrement(name)
