@@ -1,0 +1,120 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Network constructor initializes with the correct props 1`] = `
+Network {
+  "eventEmitter": EventEmitter {
+    "addEventListener": [MockFunction],
+    "events": Object {
+      "degraded": Event {
+        "callbacks": Array [],
+        "name": "degraded",
+      },
+      "offline": Event {
+        "callbacks": Array [],
+        "name": "offline",
+      },
+      "online": Event {
+        "callbacks": Array [],
+        "name": "online",
+      },
+      "resolved": Event {
+        "callbacks": Array [],
+        "name": "resolved",
+      },
+      "stable": Event {
+        "callbacks": Array [],
+        "name": "stable",
+      },
+      "unstable": Event {
+        "callbacks": Array [],
+        "name": "unstable",
+      },
+    },
+  },
+  "monitors": Object {
+    "network": NetworkMonitor {
+      "emitOfflineEvent": [Function],
+      "emitOnlineEvent": [Function],
+      "emitter": EventEmitter {
+        "addEventListener": [MockFunction],
+        "events": Object {
+          "degraded": Event {
+            "callbacks": Array [],
+            "name": "degraded",
+          },
+          "offline": Event {
+            "callbacks": Array [],
+            "name": "offline",
+          },
+          "online": Event {
+            "callbacks": Array [],
+            "name": "online",
+          },
+          "resolved": Event {
+            "callbacks": Array [],
+            "name": "resolved",
+          },
+          "stable": Event {
+            "callbacks": Array [],
+            "name": "stable",
+          },
+          "unstable": Event {
+            "callbacks": Array [],
+            "name": "unstable",
+          },
+        },
+      },
+    },
+    "service": ServiceMonitor {
+      "decrementTime": 10000,
+      "definitions": Array [
+        Object {
+          "name": "*",
+          "regex": /\\.\\*/,
+        },
+      ],
+      "emitter": EventEmitter {
+        "addEventListener": [MockFunction],
+        "events": Object {
+          "degraded": Event {
+            "callbacks": Array [],
+            "name": "degraded",
+          },
+          "offline": Event {
+            "callbacks": Array [],
+            "name": "offline",
+          },
+          "online": Event {
+            "callbacks": Array [],
+            "name": "online",
+          },
+          "resolved": Event {
+            "callbacks": Array [],
+            "name": "resolved",
+          },
+          "stable": Event {
+            "callbacks": Array [],
+            "name": "stable",
+          },
+          "unstable": Event {
+            "callbacks": Array [],
+            "name": "unstable",
+          },
+        },
+      },
+      "failureCounts": Object {
+        "*": 0,
+      },
+      "failureThreshold": 2,
+      "handleError": [MockFunction],
+      "paused": false,
+      "statuses": Array [
+        502,
+        503,
+        504,
+      ],
+    },
+    "stability": null,
+  },
+}
+`;
