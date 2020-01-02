@@ -7,7 +7,7 @@ class StabilityMonitor {
         {
             maxBufferSize = StabilityDefaults.MAX_BUFFER_SIZE,
             speedThreshold = StabilityDefaults.SPEED_THRESHOLD,
-        },
+        } = {},
     ) {
         this.emitter = emitter
         this.maxBufferSize = maxBufferSize
