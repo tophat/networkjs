@@ -1,5 +1,5 @@
+import { Monitor, Monitors, NetworkStatuses } from './constants'
 import { EventEmitter } from './events'
-import { NetworkStatuses, Monitor, Monitors } from './constants'
 
 import NetworkMonitor from './monitors/network'
 import ServiceMonitor from './monitors/service'
