@@ -1,5 +1,5 @@
-import NetworkMonitor from '.'
 import EventEmitter from '../../events/EventEmitter'
+import NetworkMonitor from '.'
 
 describe('Network Monitor', () => {
     describe('NetworkMonitor', () => {

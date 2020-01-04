@@ -1,6 +1,6 @@
-import StabilityMonitor from '.'
 import EventEmitter from '../../events/EventEmitter'
 import { NetworkStatus } from '../../constants'
+import StabilityMonitor from '.'
 
 jest.mock('../../events/EventEmitter')
 
