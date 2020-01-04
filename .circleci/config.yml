@@ -43,7 +43,7 @@ jobs:
       - restore_env
       - attach_workspace:
           at: ~/project
-      - run: yarn test
+      - run: yarn test --coverage
   lint:
     <<: *docker_defaults
     working_directory: ~/project
