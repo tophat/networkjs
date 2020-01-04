@@ -1,7 +1,7 @@
 {
-  "name": "network-js",
+  "name": "network-monitor",
   "version": "0.1.0",
-  "description": "A utility to emit network connectivity events",
+  "description": "A utility that monitors a browser's network and emits connectivity events",
   "keywords": [
     "network",
     "connection",

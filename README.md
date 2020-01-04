@@ -12,13 +12,13 @@ A utility library that emits network connectivity events
 ## Installation
 
 ```
-yarn add network-js
+yarn add network-monitor
 ```
 
 or
 
 ```
-npm install network-js
+npm install network-monitor
 ```
 
 This library has no external dependencies.
@@ -26,19 +26,19 @@ This library has no external dependencies.
 ## Usage
 
 ```javascript
-import Network from 'network-js'
+import NetworkMonitor from 'network-monitor'
 ```
 
 If you're not using ECMAScript modules:
 
 ```javascript
-const Network = require('network-js').default
+const NetworkMonitor = require('network-monitor').default
 ```
 
 Then initialize the library with your preferred configuration described below.
 
 ```javascript
-const Net = new Network({
+const NetMonitor = new NetworkMonitor({
     service: { /* service config */ },
     stability: { /* stability config */ }
 })
@@ -92,12 +92,12 @@ This monitor uses the `window.PerformanceObserver` API which is [not supported i
 This monitor needs to be hooked into your current HTTP library. For each request, you feed it the request URL and the response status code, and it will emit events upon hitting the given failure threshold.
 
 ```javascript
-const Net = new Network({ service = { /* service config */ } })
+const NetMonitor = new NetworkMonitor({ service = { /* service config */ } })
 
 this.axios.interceptors.response.use(
     success => success,
     (error) => {
-        Net.serviceError(error.requestUrl, error.status)
+        NetMonitor.serviceError(error.requestUrl, error.status)
         return error
     },
 )
@@ -108,13 +108,13 @@ this.axios.interceptors.response.use(
 ### Network
 
 ```javascript
-const Net = new Network()
+const NetMonitor = new NetworkMonitor()
 
-Net.on('online', () => {
+NetMonitor.on('online', () => {
     console.log('Network - ONLINE')
 })
 
-Net.on('offline', () => {
+NetMonitor.on('offline', () => {
     console.log('Network - OFFLINE')
 })
 ```
@@ -122,18 +122,18 @@ Net.on('offline', () => {
 ### Stability
 
 ```javascript
-const Net = new Network({
+const NetMonitor = new NetworkMonitor({
     stability: {
         maxBufferSize: 15,
         speedThreshold: 150
     }
 })
 
-Net.on('unstable', () => {
+NetMonitor.on('unstable', () => {
     console.log('Network - UNSTABLE')
 })
 
-Net.on('stable', () => {
+NetMonitor.on('stable', () => {
     console.log('Network - STABLE')
 })
 ```
@@ -141,7 +141,7 @@ Net.on('stable', () => {
 ### Service
 
 ```javascript
-const Net = new Network({
+const NetMonitor = new NetworkMonitor({
     services: {
         definitions: [
             {
@@ -157,11 +157,11 @@ const Net = new Network({
     }
 })
 
-Net.on('degraded', (serviceName) => {
+NetMonitor.on('degraded', (serviceName) => {
     console.log(`Network - ${serviceName} - DEGRADED`)
 })
 
-Net.on('resolved', (serviceName) => {
+NetMonitor.on('resolved', (serviceName) => {
     console.log(`Network - ${serviceName} - RESOLVED`)
 })
 ```
@@ -169,7 +169,7 @@ Net.on('resolved', (serviceName) => {
 ### All
 
 ```javascript
-const Net = new Network({
+const NetMonitor = new NetworkMonitor({
     stability: {
         maxBufferSize: 15,
         speedThreshold: 150
@@ -180,7 +180,7 @@ const Net = new Network({
     }
 })
 
-Net.all((event) => {
+NetMonitor.all((event) => {
     console.log(`Network - ${event}`)
 })
 ```
