@@ -1,7 +1,7 @@
 # NetworkJS
 [![CircleCI](https://circleci.com/gh/tophat/networkjs.svg?style=svg)](https://circleci.com/gh/tophat/networkjs)
 [![codecov](https://codecov.io/gh/tophat/networkjs/branch/master/graph/badge.svg)](https://codecov.io/gh/tophat/networkjs)
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat)](#contributors)
 
 A utility library that emits network connectivity events
 
