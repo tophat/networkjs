@@ -1,4 +1,4 @@
-import { NetworkStatuses, Monitor, Monitors } from './constants'
+import { Monitor, Monitors, NetworkStatuses } from './constants'
 
 import Network from './index'
 
