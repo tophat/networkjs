@@ -1,5 +1,11 @@
 # NetworkJS
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
+[![CircleCI](https://circleci.com/gh/tophat/networkjs.svg?style=svg)](https://circleci.com/gh/tophat/networkjs)
+[![codecov](https://codecov.io/gh/tophat/networkjs/branch/master/graph/badge.svg)](https://codecov.io/gh/tophat/networkjs)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tophat/networkjs)](https://dependabot.com)
+
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat)](#contributors)
+[![Maturity badge - level 1](https://img.shields.io/badge/Maturity-Level%201%20--%20New%20Project-yellow.svg)](https://github.com/tophat/getting-started/blob/master/scorecard.md)
+[![Slack workspace](https://slackinvite.dev.tophat.com/badge.svg)](https://opensource.tophat.com/slack)
 
 A utility library that emits network connectivity events
 

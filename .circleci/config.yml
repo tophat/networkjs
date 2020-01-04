@@ -43,7 +43,10 @@ jobs:
       - restore_env
       - attach_workspace:
           at: ~/project
-      - run: yarn test
+      - run: yarn test --coverage
+      - run:
+          name: Upload Test Coverage
+          command: bash <(curl -s https://codecov.io/bash)
   lint:
     <<: *docker_defaults
     working_directory: ~/project
