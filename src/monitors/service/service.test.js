@@ -1,6 +1,6 @@
-import ServiceMonitor from '.'
 import EventEmitter from '../../events/EventEmitter'
 import { NetworkStatus } from '../../constants'
+import ServiceMonitor from '.'
 
 jest.mock('../../events/EventEmitter')
 
