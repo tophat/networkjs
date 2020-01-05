@@ -11,7 +11,7 @@ class StabilityMonitor {
     ) {
         this.emitter = emitter
         this.maxBufferSize = maxBufferSize
-        this.divisor = (this.maxBufferSize * (this.maxBufferSize + 1)) / 2
+        this.weightDivisor = (this.maxBufferSize * (this.maxBufferSize + 1)) / 2
         this.speedThreshold = speedThreshold
         this.isStable = true
         this.run = this.run.bind(this)
@@ -51,9 +51,8 @@ class StabilityMonitor {
     }
 
     _emitStabilityChanges() {
-        console.log('this.runningSpeedTotal / this.divisor', this.runningSpeedTotal / this.divisor)
         const isThresholdHit =
-            this.runningSpeedTotal / this.divisor < this.speedThreshold
+            this.runningSpeedTotal / this.weightDivisor < this.speedThreshold
         if (this.isStable && isThresholdHit) {
             this.isStable = false
             this.emitter.dispatchEvent(NetworkStatus.UNSTABLE)
