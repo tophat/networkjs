@@ -5,7 +5,9 @@ NetworkMonitor {
   "emitOfflineEvent": [Function],
   "emitOnlineEvent": [Function],
   "emitter": EventEmitter {
-    "events": Object {},
+    "addEventListener": [MockFunction],
+    "dispatchEvent": [MockFunction],
+    "registerEvent": [MockFunction],
   },
 }
 `;
