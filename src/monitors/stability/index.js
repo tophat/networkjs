@@ -11,6 +11,7 @@ class StabilityMonitor {
     ) {
         this.emitter = emitter
         this.maxBufferSize = maxBufferSize
+        this.divisor = (this.maxBufferSize * (this.maxBufferSize + 1)) / 2
         this.speedThreshold = speedThreshold
         this.isStable = true
         this.run = this.run.bind(this)
@@ -20,8 +21,7 @@ class StabilityMonitor {
 
     initialize() {
         this.entryBuffer = []
-        this.durationTotal = 0
-        this.transferSizeTotal = 0
+        this.runningSpeedTotal = 0
         this.observer.observe({ entryTypes: ['resource'] })
     }
 
@@ -33,26 +33,27 @@ class StabilityMonitor {
         this.initialize()
     }
 
+    _adjustEntryWeights() {
+        for (const speed of this.entryBuffer) {
+            this.runningSpeedTotal -= speed
+        }
+    }
+
     _addEntry(entry) {
         const { responseStart, responseEnd, transferSize } = entry
-        const duration = responseEnd - responseStart
-        this.entryBuffer.push({
-            duration,
-            transferSize,
-        })
-        this.durationTotal += duration
-        this.transferSizeTotal += transferSize
+        const speed = transferSize / (responseEnd - responseStart)
+        this.entryBuffer.push(speed)
+        this.runningSpeedTotal += this.maxBufferSize * speed
     }
 
     _removeOverflowEntry() {
-        const { duration, transferSize } = this.entryBuffer.shift()
-        this.durationTotal -= duration
-        this.transferSizeTotal -= transferSize
+        this.entryBuffer.shift()
     }
 
     _emitStabilityChanges() {
+        console.log('this.runningSpeedTotal / this.divisor', this.runningSpeedTotal / this.divisor)
         const isThresholdHit =
-            this.transferSizeTotal / this.durationTotal < this.speedThreshold
+            this.runningSpeedTotal / this.divisor < this.speedThreshold
         if (this.isStable && isThresholdHit) {
             this.isStable = false
             this.emitter.dispatchEvent(NetworkStatus.UNSTABLE)
@@ -60,6 +61,10 @@ class StabilityMonitor {
             this.isStable = true
             this.emitter.dispatchEvent(NetworkStatus.STABLE)
         }
+    }
+
+    get isOverMaxBufferSize() {
+        return this.entryBuffer.length > this.maxBufferSize
     }
 
     run(list) {
@@ -72,9 +77,10 @@ class StabilityMonitor {
             )
                 continue
 
+            this._adjustEntryWeights()
             this._addEntry(currentEntry)
 
-            if (this.entryBuffer.length > this.maxBufferSize) {
+            if (this.isOverMaxBufferSize) {
                 this._removeOverflowEntry()
                 this._emitStabilityChanges()
             }
