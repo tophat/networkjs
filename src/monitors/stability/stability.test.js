@@ -5,6 +5,7 @@ import StabilityMonitor from '.'
 jest.mock('../../events/EventEmitter')
 
 const MAX_BUFFER_SIZE = 5
+const MAX_BUFFER_DIVISOR = 15
 const SPEED_THRESHOLD = 50
 
 describe('Stability Monitor', () => {
@@ -36,8 +37,7 @@ describe('Stability Monitor', () => {
             monitor.initialize()
 
             expect(monitor.entryBuffer).toStrictEqual([])
-            expect(monitor.durationTotal).toBe(0)
-            expect(monitor.transferSizeTotal).toBe(0)
+            expect(monitor.runningSpeedTotal).toBe(0)
             expect(observeSpy).toHaveBeenCalledWith({
                 entryTypes: ['resource'],
             })
@@ -70,43 +70,70 @@ describe('Stability Monitor', () => {
             responseEnd: 1000,
         }
 
-        const makeList = (
+        const makeList = ({
             entryLength = VALID_ENTRY_LENGTH,
             entry = DEFAULT_ENTRY,
-        ) => ({
-            getEntries: () => Array(entryLength).fill(entry),
+            entries = [],
+        }) => ({
+            getEntries: () =>
+                entries.length ? entries : Array(entryLength).fill(entry),
         })
 
         it('discards entries missing information', () => {
-            const invalidEntry = {}
-            monitor.run(makeList(VALID_ENTRY_LENGTH, invalidEntry))
+            const entry = {}
+            monitor.run(
+                makeList({
+                    entryLength: VALID_ENTRY_LENGTH,
+                    entry,
+                }),
+            )
 
             expect(monitor.entryBuffer).toHaveLength(0)
         })
 
-        it('pushes entries onto buffer and adds them to totals', () => {
-            monitor.run(makeList())
+        it('pushes entries onto buffer and adds them to the weighted average totals', () => {
+            monitor.maxBufferSize = 3
+            const entries = [
+                {
+                    transferSize: 500,
+                    responseStart: 100,
+                    responseEnd: 150,
+                    speed: 500 / 50,
+                },
+                {
+                    transferSize: 1000,
+                    responseStart: 100,
+                    responseEnd: 150,
+                    speed: 1000 / 50,
+                },
+                {
+                    transferSize: 100,
+                    responseStart: 100,
+                    responseEnd: 150,
+                    speed: 100 / 50,
+                },
+            ]
 
-            expect(monitor.entryBuffer).toHaveLength(VALID_ENTRY_LENGTH)
-            expect(monitor.durationTotal).toBe(
-                VALID_ENTRY_LENGTH *
-                    (DEFAULT_ENTRY.responseEnd - DEFAULT_ENTRY.responseStart),
+            monitor.run(
+                makeList({
+                    entries,
+                }),
             )
-            expect(monitor.transferSizeTotal).toBe(
-                VALID_ENTRY_LENGTH * DEFAULT_ENTRY.transferSize,
+
+            expect(monitor.entryBuffer).toHaveLength(3)
+            expect(monitor.runningSpeedTotal).toBe(
+                3 * entries[2].speed +
+                    2 * entries[1].speed +
+                    1 * entries[0].speed,
             )
         })
 
         it('Removes overflow entries from buffer and totals', () => {
-            monitor.run(makeList(MAX_BUFFER_SIZE + 1))
+            monitor.run(makeList({ entryLength: MAX_BUFFER_SIZE + 1 }))
 
             expect(monitor.entryBuffer).toHaveLength(MAX_BUFFER_SIZE)
-            expect(monitor.durationTotal).toBe(
-                MAX_BUFFER_SIZE *
-                    (DEFAULT_ENTRY.responseEnd - DEFAULT_ENTRY.responseStart),
-            )
-            expect(monitor.transferSizeTotal).toBe(
-                MAX_BUFFER_SIZE * DEFAULT_ENTRY.transferSize,
+            expect(monitor.runningSpeedTotal).toBe(
+                MAX_BUFFER_DIVISOR * (500 / 100),
             )
         })
 
@@ -114,10 +141,13 @@ describe('Stability Monitor', () => {
             expect(monitor.isStable).toBe(true)
 
             monitor.run(
-                makeList(MAX_BUFFER_SIZE + 1, {
-                    transferSize: 500,
-                    responseStart: 10,
-                    responseEnd: 2010,
+                makeList({
+                    entryLength: MAX_BUFFER_SIZE + 1,
+                    entry: {
+                        transferSize: 500,
+                        responseStart: 10,
+                        responseEnd: 2010,
+                    },
                 }),
             )
 
@@ -127,10 +157,13 @@ describe('Stability Monitor', () => {
             )
 
             monitor.run(
-                makeList(MAX_BUFFER_SIZE + 1, {
-                    transferSize: 500,
-                    responseStart: 10,
-                    responseEnd: 11,
+                makeList({
+                    entryLength: MAX_BUFFER_SIZE + 1,
+                    entry: {
+                        transferSize: 500,
+                        responseStart: 10,
+                        responseEnd: 11,
+                    },
                 }),
             )
 
