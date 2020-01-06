@@ -1,5 +1,8 @@
 import EventEmitter from '../../events/EventEmitter'
 import NetworkMonitor from '.'
+import { NetworkStatus } from '../../constants'
+
+jest.mock('../../events/EventEmitter')
 
 describe('Network Monitor', () => {
     describe('NetworkMonitor', () => {
@@ -26,6 +29,16 @@ describe('Network Monitor', () => {
                 monitor.initialize()
 
                 expect(window.addEventListener).toHaveBeenCalledTimes(2)
+                expect(window.addEventListener).toHaveBeenNthCalledWith(
+                    1,
+                    'online',
+                    monitor.emitOnlineEvent,
+                )
+                expect(window.addEventListener).toHaveBeenNthCalledWith(
+                    2,
+                    'offline',
+                    monitor.emitOfflineEvent,
+                )
             })
         })
 
@@ -46,6 +59,23 @@ describe('Network Monitor', () => {
 
                 expect(window.addEventListener).toHaveBeenCalledTimes(2)
                 expect(initializeSpy).toHaveBeenCalled()
+            })
+        })
+
+        describe('event emitter', () => {
+            it('dispatches online event on window online', () => {
+                monitor.emitOnlineEvent()
+
+                expect(monitor.emitter.dispatchEvent).toHaveBeenCalledWith(
+                    NetworkStatus.ONLINE,
+                )
+            })
+            it('dispatches offline event on window offline', () => {
+                monitor.emitOfflineEvent()
+
+                expect(monitor.emitter.dispatchEvent).toHaveBeenCalledWith(
+                    NetworkStatus.OFFLINE,
+                )
             })
         })
     })

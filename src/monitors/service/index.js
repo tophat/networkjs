@@ -60,6 +60,8 @@ class ServiceMonitor {
     handleError(url, status) {
         if (!this.paused && this.statuses.includes(status)) {
             const name = this.getServiceForUrl(url)
+            if (!name) return
+
             this.increment(name)
             if (this.failureCounts[name] === this.failureThreshold) {
                 this.emitter.dispatchEvent(NetworkStatus.DEGRADED, name)
