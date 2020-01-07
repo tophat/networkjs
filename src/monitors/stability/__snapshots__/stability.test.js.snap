@@ -2,7 +2,6 @@
 
 exports[`Stability Monitor constructor initializes with the correct props 1`] = `
 StabilityMonitor {
-  "durationTotal": 0,
   "emitter": EventEmitter {
     "addEventListener": [MockFunction],
     "dispatchEvent": [MockFunction],
@@ -32,7 +31,8 @@ StabilityMonitor {
     },
   },
   "run": [Function],
+  "runningSpeedTotal": 0,
   "speedThreshold": 50,
-  "transferSizeTotal": 0,
+  "weightDivisor": 15,
 }
 `;

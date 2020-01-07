@@ -1,6 +1,6 @@
-import ServiceMonitor from '.'
 import EventEmitter from '../../events/EventEmitter'
 import { NetworkStatus } from '../../constants'
+import ServiceMonitor from '.'
 
 jest.mock('../../events/EventEmitter')
 
@@ -88,6 +88,23 @@ describe('Service Monitor', () => {
                 '*',
             )
             expect(monitor.waitAndDecrement).toHaveBeenCalledTimes(2)
+        })
+
+        it('does nothing if not tracking path', () => {
+            monitor = new ServiceMonitor(emitter, {
+                definitions: [
+                    {
+                        name: 'path 1',
+                        regex: new RegExp('/path/1'),
+                    },
+                ],
+            })
+
+            jest.spyOn(monitor, 'waitAndDecrement')
+            monitor.handleError('/path/2', 502)
+
+            expect(monitor.failureCounts['path 1']).toBe(0)
+            expect(monitor.waitAndDecrement).toHaveBeenCalledTimes(0)
         })
     })
 
