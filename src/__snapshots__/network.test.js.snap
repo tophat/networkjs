@@ -70,7 +70,16 @@ Network {
       "resume": [MockFunction],
       "waitAndDecrement": [MockFunction],
     },
-    "stability": null,
+    "stability": StabilityMonitor {
+      "_addEntry": [MockFunction],
+      "_adjustEntryWeights": [MockFunction],
+      "_emitStabilityChanges": [MockFunction],
+      "_removeOverflowEntry": [MockFunction],
+      "initialize": [MockFunction],
+      "pause": [MockFunction],
+      "resume": [MockFunction],
+      "run": [MockFunction],
+    },
   },
 }
 `;

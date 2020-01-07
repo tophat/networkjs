@@ -1,4 +1,4 @@
-import { Monitor, Monitors, NetworkStatuses } from './constants'
+import { Monitor, Monitors, NetworkStatuses, ErrorMessage} from './constants'
 import { EventEmitter } from './events'
 
 import NetworkMonitor from './monitors/network'
@@ -47,7 +47,7 @@ class Network {
 
     on(event, callback) {
         if (typeof event !== 'string' || !NetworkStatuses.includes(event)) {
-            throw new Error(`Event must be one of ${NetworkStatuses}`)
+            throw new Error(`${ErrorMessage.INVALID_EVENT}`)
         }
 
         this.eventEmitter.addEventListener(event, callback)

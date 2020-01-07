@@ -1,8 +1,8 @@
-import { NetworkStatuses, Monitor, Monitors } from './constants'
-import EventEmitter from './events/EventEmitter'
+import { NetworkStatus, NetworkStatuses, Monitor, Monitors, ErrorMessage } from './constants'
 import NetworkMonitor from './monitors/network'
-import StabilityMonitor from './monitors/stability'
 import ServiceMonitor from './monitors/service'
+import StabilityMonitor from './monitors/stability'
+import EventEmitter from './events/EventEmitter'
 import Network from './index'
 
 jest.mock('./events/EventEmitter')
@@ -18,6 +18,7 @@ describe('Network', () => {
     const serviceMonitor = new ServiceMonitor() 
     
     beforeEach(() => {
+        window.PerformanceObserver = 'arbitraryTest'
         monitor = new Network()
     })
 
@@ -33,15 +34,22 @@ describe('Network', () => {
     })
 
     describe('on', () => {
-        //TODO: test that the error matches - also put that error in a constants file 
         it('throws error on string not in NetworkStatuses', () => {
             expect(() => {
                 monitor.on('INVALID', jest.fn)
-            }).toThrow(Error)
+            }).toThrow(`${ErrorMessage.INVALID_EVENT}`)
         })
-        //TODO:test matching args and use it.each to test each NetworkStatus
-        it('adds an EventListener to the monitor eventEmitter', () => {
-            monitor.on('online', jest.fn)
+   
+        it.each`
+            networkStatus             
+            ${NetworkStatus.ONLINE}      
+            ${NetworkStatus.OFFLINE}      
+            ${NetworkStatus.STABLE}      
+            ${NetworkStatus.UNSTABLE}      
+            ${NetworkStatus.DEGRADED}      
+            ${NetworkStatus.RESOLVED}      
+        `('adds an EventListener to the $networkStatus monitor eventEmitter', ({networkStatus}) => {
+            monitor.on(networkStatus, jest.fn)
             expect(monitor.eventEmitter.addEventListener).toHaveBeenCalledTimes(
                 1,
             )
@@ -59,25 +67,12 @@ describe('Network', () => {
 
     describe('serviceError', () => {
         it('Calls handleError from the service monitor', () => {
-            //DONE: replace args 
             monitor.serviceError('/api/resource/1', 502)
             expect(
                 monitor.monitors[Monitor.SERVICE].handleError,
             ).toHaveBeenCalled()
         })
     })
-   //TODO: implement example 
-    //describe('test Button component', () => {
-    //  it.each`
-    //    propName       | propValue | className       | result
-    //    ${'isPrimary'} | ${true}   | ${'is-primary'} | ${true}
-    //    ${'isDanger'}  | ${true}   | ${'is-danger'}  | ${true}
-    //    ${'isSuccess'} | ${true}   | ${'is-success'} | ${true}
-    //  `('should have class $className when prop $propName is equal to $propValue', ({propName, propValue, className, result}) => {
-    //    props = { ...props, [propName]: propValue };
-    //    const enzymeWrapper = shallow(<Button {...props} />);    expect(enzymeWrapper.hasClass(className)).toEqual(result);
-    //  });
-    //});
     
     describe('pause', () => {
         it('calls pause on the given monitor', () => {
@@ -87,7 +82,7 @@ describe('Network', () => {
         
         it('calls pause on all monitors', () => {
             monitor.pause()
-            //this is the big WTF 
+            
             Monitors.forEach( m => {
                 expect(monitor.monitors[m].pause).toHaveBeenCalledTimes(1)
             })
@@ -101,14 +96,10 @@ describe('Network', () => {
         })
 
         it('calls resume on all monitors', () => {
-            Monitors.forEach(m => {
-                resumeSpies[m] = () => jest.spyOn(monitor.monitors[m], 'resume')
-            })
-
             monitor.resume()
 
-            resumeSpies.forEach(spy => {
-                expect(spy).toHaveBeenCalledTimes(1)
+            Monitors.forEach(m => {
+                expect(monitor.monitors[m].resume).toHaveBeenCalledTimes(1)
             })
         })
     })
