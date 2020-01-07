@@ -1,13 +1,8 @@
-<<<<<<< HEAD
 import { NetworkStatuses, Monitor, Monitors } from './constants'
 import EventEmitter from './events/EventEmitter'
 import NetworkMonitor from './monitors/network'
 import StabilityMonitor from './monitors/stability'
 import ServiceMonitor from './monitors/service'
-=======
-import { Monitor, Monitors, NetworkStatuses } from './constants'
-
->>>>>>> ca75c677aa3c540fdacafdda87249dc1933859e8
 import Network from './index'
 
 jest.mock('./events/EventEmitter')
