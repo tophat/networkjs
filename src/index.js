@@ -1,4 +1,4 @@
-import { Monitor, Monitors, NetworkStatuses, ErrorMessage} from './constants'
+import { ErrorMessage, Monitor, Monitors, NetworkStatuses } from './constants'
 import { EventEmitter } from './events'
 
 import NetworkMonitor from './monitors/network'
@@ -21,7 +21,6 @@ const _monitorService = (emitter, config) => {
 
 const _monitorStability = (emitter, config) => {
     if (!('PerformanceObserver' in window)) return null
-
     return new StabilityMonitor(emitter, config)
 }
 
