@@ -18,7 +18,6 @@ describe('Network', () => {
     const serviceMonitor = new ServiceMonitor() 
     
     beforeEach(() => {
-        window.PerformanceObserver = 'arbitraryTest'
         monitor = new Network()
     })
 
@@ -27,9 +26,21 @@ describe('Network', () => {
     })
 
     describe('constructor', () => {
-        it('initializes with the correct props', () => {
-            //TODO: refactor this to only check certain properties
-            expect(monitor).toMatchSnapshot()
+        it('initializes stability monitor to null when no PerformanceObserver is presnet', () =>{
+            window.PerformanceObserver = null 
+            console.log('PerformanceObserver' in window)
+            expect(monitor.monitors[Monitor.Stability]).toBe(null)
+        }) 
+        
+        window.PerformanceObserver = 'arbitraryTest'
+        
+        it.each`
+            instanceType            | monitorType
+            ${Monitor.SERVICE}      | ${ServiceMonitor}
+            ${Monitor.STABILITY}    | ${StabilityMonitor}
+            ${Monitor.NETWORK}      | ${NetworkMonitor}
+        `('initializes with the correct props', ({instanceType, monitorType}) => {
+            expect(monitor.monitors[instanceType]).toBeInstanceOf(monitorType)
         })
     })
 
@@ -50,8 +61,9 @@ describe('Network', () => {
             ${NetworkStatus.RESOLVED}      
         `('adds an EventListener to the $networkStatus monitor eventEmitter', ({networkStatus}) => {
             monitor.on(networkStatus, jest.fn)
-            expect(monitor.eventEmitter.addEventListener).toHaveBeenCalledTimes(
-                1,
+            
+            expect(monitor.eventEmitter.addEventListener).toHaveBeenCalledWith(
+                networkStatus, expect.any(Function)
             )
         })
     })
@@ -59,8 +71,8 @@ describe('Network', () => {
     describe('all', () => {
         it('Adds an EventListener for each NetworkStatus', () => {
             monitor.all(jest.fn)
-            expect(monitor.eventEmitter.addEventListener).toHaveBeenCalledTimes(
-                NetworkStatuses.length,
+            expect(monitor.eventEmitter.addEventListener).toHaveBeenCalledWith(
+                expect.stringMatching(`/${NetworkStatus.ONLINE}|${NetworkStatus.OFFLINE}|${NetworkStatus.DEGRADED}|${NetworkStatus.RESOLVED}|${NetworkStatus.UNSTABLE}|${NetworkStatus.STABLE}/g`), expect.any(Function)
             )
         })
     })
@@ -75,6 +87,7 @@ describe('Network', () => {
     })
     
     describe('pause', () => {
+        window.PerformanceObserver = 'arbitraryTest'
         it('calls pause on the given monitor', () => {
             monitor.pause(Monitor.SERVICE)
             expect(monitor.monitors[Monitor.SERVICE].pause).toHaveBeenCalledTimes(1)
@@ -90,6 +103,7 @@ describe('Network', () => {
     })
 
     describe('resume', () => {
+        window.PerformanceObserver = 'arbitraryTest'
         it('calls resume on the given monitor', () => {
             monitor.resume(Monitor.SERVICE)
             expect(monitor.monitors[Monitor.SERVICE].resume).toHaveBeenCalledTimes(1)
