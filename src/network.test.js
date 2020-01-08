@@ -26,11 +26,11 @@ describe('Network', () => {
     })
 
     describe('constructor', () => {
-        it('initializes stability monitor to null when no PerformanceObserver is presnet', () =>{
-            window.PerformanceObserver = null 
-            console.log('PerformanceObserver' in window)
-            expect(monitor.monitors[Monitor.Stability]).toBe(null)
-        }) 
+        //it('initializes stability monitor to null when no PerformanceObserver is presnet', () =>{
+        //    window.PerformanceObserver = null 
+        //    console.log('PerformanceObserver' in window)
+        //    expect(monitor.monitors[Monitor.Stability]).toBe(null)
+        //}) 
         
         window.PerformanceObserver = 'arbitraryTest'
         
@@ -48,18 +48,10 @@ describe('Network', () => {
         it('throws error on string not in NetworkStatuses', () => {
             expect(() => {
                 monitor.on('INVALID', jest.fn)
-            }).toThrow(`${ErrorMessage.INVALID_EVENT}`)
+            }).toThrow(ErrorMessage.INVALID_EVENT)
         })
    
-        it.each`
-            networkStatus             
-            ${NetworkStatus.ONLINE}      
-            ${NetworkStatus.OFFLINE}      
-            ${NetworkStatus.STABLE}      
-            ${NetworkStatus.UNSTABLE}      
-            ${NetworkStatus.DEGRADED}      
-            ${NetworkStatus.RESOLVED}      
-        `('adds an EventListener to the $networkStatus monitor eventEmitter', ({networkStatus}) => {
+        it.each(NetworkStatuses,'adds an EventListener to the $networkStatus monitor eventEmitter', ({networkStatus}) => {
             monitor.on(networkStatus, jest.fn)
             
             expect(monitor.eventEmitter.addEventListener).toHaveBeenCalledWith(
