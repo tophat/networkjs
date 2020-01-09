@@ -64,19 +64,18 @@ describe('Network', () => {
     })
 
     describe('all', () => {
-        it.each(
-            NetworkStatuses,
-            'adds an EventListener for each NetworkStatus',
-            ({ networkStatus }) => {
-                const callbackSpy = jest.fn()
-                lib.all(callbackSpy)
-                expect(lib.eventEmitter.addEventListener).toHaveBeenCalledWith(
-                    expect(
-                        lib.eventEmitter.addEventListener,
-                    ).toHaveBeenCalledWith(networkStatus, callbackSpy),
-                )
-            },
-        )
+        it('listens for all network statuses', () => {
+            const spy = jest.fn()
+            lib.all(spy)
+
+            const statuses = []
+            for (const args of lib.eventEmitter.addEventListener.mock
+                .calls) {
+                statuses.push(args[0])
+            }
+            expect(statuses).toHaveLength(NetworkStatuses.length)
+            expect(statuses).toEqual(expect.arrayContaining(NetworkStatuses))
+        })
     })
 
     describe('serviceError', () => {
