@@ -68,20 +68,24 @@ describe('Network', () => {
             const spy = jest.fn()
             lib.all(spy)
 
-            const statuses = []
-            for (const args of lib.eventEmitter.addEventListener.mock
-                .calls) {
-                statuses.push(args[0])
+            for (let i = 0; i < NetworkStatuses.length; i++) {
+                expect(
+                    lib.eventEmitter.addEventListener,
+                ).toHaveBeenNthCalledWith(
+                    i + 1,
+                    NetworkStatuses[i],
+                    expect.any(Function),
+                )
             }
-            expect(statuses).toHaveLength(NetworkStatuses.length)
-            expect(statuses).toEqual(expect.arrayContaining(NetworkStatuses))
         })
     })
 
     describe('serviceError', () => {
         it('Calls handleError from the service monitor', () => {
             lib.serviceError('/api/resource/1', 502)
-            expect(lib.monitors[Monitor.SERVICE].handleError).toHaveBeenCalled()
+            expect(
+                lib.monitors[Monitor.SERVICE].handleError,
+            ).toHaveBeenCalledWith('/api/resource/1', 502)
         })
     })
 

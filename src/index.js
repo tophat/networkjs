@@ -21,6 +21,7 @@ const _monitorService = (emitter, config) => {
 
 const _monitorStability = (emitter, config) => {
     if (!('PerformanceObserver' in window)) return null
+
     return new StabilityMonitor(emitter, config)
 }
 
@@ -46,7 +47,7 @@ class Network {
 
     on(event, callback) {
         if (typeof event !== 'string' || !NetworkStatuses.includes(event)) {
-            throw new Error(`${ErrorMessage.INVALID_EVENT}`)
+            throw new Error(ErrorMessage.INVALID_EVENT)
         }
 
         this.eventEmitter.addEventListener(event, callback)
