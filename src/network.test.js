@@ -48,10 +48,9 @@ describe('Network', () => {
             }).toThrow(ErrorMessage.INVALID_EVENT)
         })
 
-        it.each(
-            NetworkStatuses,
-            'adds an EventListener to the $networkStatus monitor eventEmitter',
-            ({ networkStatus }) => {
+        it.each([NetworkStatuses])(
+            'adds an event listener for the %p event',
+            networkStatus => {
                 const callbackSpy = jest.fn()
                 lib.on(networkStatus, callbackSpy)
 
@@ -65,6 +64,12 @@ describe('Network', () => {
 
     describe('all', () => {
         it('listens for all network statuses', () => {
+            lib.eventEmitter.addEventListener.mockImplementation(
+                (s, callback) => {
+                    callback('some arg')
+                },
+            )
+
             const spy = jest.fn()
             lib.all(spy)
 
@@ -75,6 +80,11 @@ describe('Network', () => {
                     i + 1,
                     NetworkStatuses[i],
                     expect.any(Function),
+                )
+                expect(spy).toHaveBeenNthCalledWith(
+                    i + 1,
+                    NetworkStatuses[i],
+                    'some arg',
                 )
             }
         })

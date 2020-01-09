@@ -1,38 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Stability Monitor constructor initializes with the correct props 1`] = `
-StabilityMonitor {
-  "emitter": EventEmitter {
-    "addEventListener": [MockFunction],
-    "dispatchEvent": [MockFunction],
-    "registerEvent": [MockFunction],
-  },
+Object {
   "entryBuffer": Array [],
   "isStable": true,
   "maxBufferSize": 5,
-  "observer": Object {
-    "disconnect": [MockFunction],
-    "observe": [MockFunction] {
-      "calls": Array [
-        Array [
-          Object {
-            "entryTypes": Array [
-              "resource",
-            ],
-          },
-        ],
-      ],
-      "results": Array [
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-      ],
-    },
-  },
-  "run": [Function],
   "runningSpeedTotal": 0,
   "speedThreshold": 50,
   "weightDivisor": 15,
+}
+`;
+
+exports[`Stability Monitor constructor initializes with the default props 1`] = `
+Object {
+  "entryBuffer": Array [],
+  "isStable": true,
+  "maxBufferSize": 10,
+  "runningSpeedTotal": 0,
+  "speedThreshold": 100,
+  "weightDivisor": 55,
 }
 `;

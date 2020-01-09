@@ -21,8 +21,25 @@ describe('Service Monitor', () => {
     })
 
     describe('constructor', () => {
+        it('initializes with default props', () => {
+            monitor = new ServiceMonitor(emitter)
+            const {
+                /* eslint-disable no-unused-vars */
+                emitter: e,
+                /* eslint-enable no-unused-vars */
+                ...otherProps
+            } = monitor
+            expect(otherProps).toMatchSnapshot()
+        })
+
         it('initializes with the correct props', () => {
-            expect(monitor).toMatchSnapshot()
+            const {
+                /* eslint-disable no-unused-vars */
+                emitter: e,
+                /* eslint-enable no-unused-vars */
+                ...otherProps
+            } = monitor
+            expect(otherProps).toMatchSnapshot()
         })
     })
 

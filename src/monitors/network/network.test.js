@@ -19,7 +19,9 @@ describe('Network Monitor', () => {
 
         describe('constructor', () => {
             it('initializes with the correct props', () => {
-                expect(monitor).toMatchSnapshot()
+                // eslint-disable-next-line no-unused-vars
+                const { emitter: e, ...otherProps } = monitor
+                expect(otherProps).toMatchSnapshot()
             })
         })
 

@@ -25,8 +25,30 @@ describe('Stability Monitor', () => {
     })
 
     describe('constructor', () => {
+        it('initializes with the default props', () => {
+            monitor = new StabilityMonitor(emitter)
+            const {
+                /* eslint-disable no-unused-vars */
+                emitter: e,
+                run,
+                observer,
+                /* eslint-enable no-unused-vars */
+                ...otherProps
+            } = monitor
+            expect(otherProps).toMatchSnapshot()
+            expect(window.PerformanceObserver).toHaveBeenCalled()
+        })
+
         it('initializes with the correct props', () => {
-            expect(monitor).toMatchSnapshot()
+            const {
+                /* eslint-disable no-unused-vars */
+                emitter: e,
+                run,
+                observer,
+                /* eslint-enable no-unused-vars */
+                ...otherProps
+            } = monitor
+            expect(otherProps).toMatchSnapshot()
             expect(window.PerformanceObserver).toHaveBeenCalled()
         })
     })
