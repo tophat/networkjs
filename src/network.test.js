@@ -1,10 +1,4 @@
-import {
-    ErrorMessage,
-    Monitor,
-    Monitors,
-    NetworkStatus,
-    NetworkStatuses,
-} from './constants'
+import { ErrorMessage, Monitor, Monitors, NetworkStatuses } from './constants'
 import Network from './index'
 import NetworkMonitor from './monitors/network'
 import ServiceMonitor from './monitors/service'
@@ -16,11 +10,11 @@ jest.mock('./monitors/stability')
 jest.mock('./monitors/network')
 
 describe('Network', () => {
-    let monitor
+    let lib
 
     beforeEach(() => {
         delete window.PerformanceObserver
-        monitor = new Network()
+        lib = new Network()
     })
 
     afterEach(() => {
@@ -29,7 +23,7 @@ describe('Network', () => {
 
     describe('constructor', () => {
         it('initializes stability monitor to null when no PerformanceObserver is present', () => {
-            expect(monitor.monitors[Monitor.STABILITY]).toBeNull()
+            expect(lib.monitors[Monitor.STABILITY]).toBeNull()
         })
 
         it.each`
@@ -50,7 +44,7 @@ describe('Network', () => {
     describe('on', () => {
         it('throws error on string not in NetworkStatuses', () => {
             expect(() => {
-                monitor.on('INVALID', jest.fn)
+                lib.on('INVALID', jest.fn)
             }).toThrow(ErrorMessage.INVALID_EVENT)
         })
 
@@ -58,42 +52,44 @@ describe('Network', () => {
             NetworkStatuses,
             'adds an EventListener to the $networkStatus monitor eventEmitter',
             ({ networkStatus }) => {
-                monitor.on(networkStatus, jest.fn)
+                const callbackSpy = jest.fn()
+                lib.on(networkStatus, callbackSpy)
 
-                expect(
-                    monitor.eventEmitter.addEventListener,
-                ).toHaveBeenCalledWith(networkStatus, expect.any(Function))
+                expect(lib.eventEmitter.addEventListener).toHaveBeenCalledWith(
+                    networkStatus,
+                    callbackSpy,
+                )
             },
         )
     })
 
     describe('all', () => {
-        it('Adds an EventListener for each NetworkStatus', () => {
-            monitor.all(jest.fn)
-            expect(monitor.eventEmitter.addEventListener).toHaveBeenCalledWith(
-                expect.stringMatching(
-                    `/${NetworkStatus.ONLINE}|${NetworkStatus.OFFLINE}|${NetworkStatus.DEGRADED}|${NetworkStatus.RESOLVED}|${NetworkStatus.UNSTABLE}|${NetworkStatus.STABLE}/g`,
-                ),
-                expect.any(Function),
-            )
-        })
+        it.each(
+            NetworkStatuses,
+            'adds an EventListener for each NetworkStatus',
+            ({ networkStatus }) => {
+                const callbackSpy = jest.fn()
+                lib.all(callbackSpy)
+                expect(lib.eventEmitter.addEventListener).toHaveBeenCalledWith(
+                    expect(
+                        lib.eventEmitter.addEventListener,
+                    ).toHaveBeenCalledWith(networkStatus, callbackSpy),
+                )
+            },
+        )
     })
 
     describe('serviceError', () => {
         it('Calls handleError from the service monitor', () => {
-            monitor.serviceError('/api/resource/1', 502)
-            expect(
-                monitor.monitors[Monitor.SERVICE].handleError,
-            ).toHaveBeenCalled()
+            lib.serviceError('/api/resource/1', 502)
+            expect(lib.monitors[Monitor.SERVICE].handleError).toHaveBeenCalled()
         })
     })
 
     describe('pause', () => {
         it('calls pause on the given monitor', () => {
-            monitor.pause(Monitor.SERVICE)
-            expect(
-                monitor.monitors[Monitor.SERVICE].pause,
-            ).toHaveBeenCalledTimes(1)
+            lib.pause(Monitor.SERVICE)
+            expect(lib.monitors[Monitor.SERVICE].pause).toHaveBeenCalledTimes(1)
         })
 
         it('calls pause on all monitors', () => {
@@ -109,10 +105,10 @@ describe('Network', () => {
 
     describe('resume', () => {
         it('calls resume on the given monitor', () => {
-            monitor.resume(Monitor.SERVICE)
-            expect(
-                monitor.monitors[Monitor.SERVICE].resume,
-            ).toHaveBeenCalledTimes(1)
+            lib.resume(Monitor.SERVICE)
+            expect(lib.monitors[Monitor.SERVICE].resume).toHaveBeenCalledTimes(
+                1,
+            )
         })
 
         it('calls resume on all monitors', () => {
