@@ -8,7 +8,7 @@
 
 ## Overview
 
-A utility library that emits network connectivity events
+Network JS is a utility library that emits network connectivity events.
 
 ## Installation
 
