@@ -27,7 +27,7 @@ jobs:
           run: |
             git log -1 HEAD
             git log -1 ${{ github.event.pull_request.head.sha }}
-            git log -1 master
+            git log -1 origin/master
         - name: Run Commit Watch
           env:
             COMMIT_WATCH_OUTPUT_DIR: ${{ env.ARTIFACT_DIR }}/
