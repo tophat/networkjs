@@ -5,13 +5,13 @@ import NetworkMonitor from './monitors/network'
 import ServiceMonitor from './monitors/service'
 import StabilityMonitor from './monitors/stability'
 
-const _registerNetworkStatusEvents = emitter => {
-    NetworkStatuses.forEach(s => {
+const _registerNetworkStatusEvents = (emitter) => {
+    NetworkStatuses.forEach((s) => {
         emitter.registerEvent(s)
     })
 }
 
-const _monitorNetwork = emitter => {
+const _monitorNetwork = (emitter) => {
     return new NetworkMonitor(emitter)
 }
 
@@ -54,7 +54,7 @@ class Network {
     }
 
     all(callback) {
-        NetworkStatuses.forEach(s => {
+        NetworkStatuses.forEach((s) => {
             this.eventEmitter.addEventListener(s, (...args) => {
                 callback(s, ...args)
             })
@@ -66,13 +66,13 @@ class Network {
     }
 
     pause(monitor) {
-        Monitors.filter(m => !monitor || m === monitor).forEach(m => {
+        Monitors.filter((m) => !monitor || m === monitor).forEach((m) => {
             this.monitors[m] && this.monitors[m].pause()
         })
     }
 
     resume(monitor) {
-        Monitors.filter(m => !monitor || m === monitor).forEach(m => {
+        Monitors.filter((m) => !monitor || m === monitor).forEach((m) => {
             this.monitors[m] && this.monitors[m].resume()
         })
     }

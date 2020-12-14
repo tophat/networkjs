@@ -50,7 +50,7 @@ describe('Network', () => {
 
         it.each([NetworkStatuses])(
             'adds an event listener for the %p event',
-            networkStatus => {
+            (networkStatus) => {
                 const callbackSpy = jest.fn()
                 lib.on(networkStatus, callbackSpy)
 
@@ -110,7 +110,7 @@ describe('Network', () => {
             const mon = new Network()
             mon.pause()
 
-            Monitors.forEach(m => {
+            Monitors.forEach((m) => {
                 expect(mon.monitors[m].pause).toHaveBeenCalledTimes(1)
             })
         })
@@ -129,7 +129,7 @@ describe('Network', () => {
             const mon = new Network()
             mon.resume()
 
-            Monitors.forEach(m => {
+            Monitors.forEach((m) => {
                 expect(mon.monitors[m].resume).toHaveBeenCalledTimes(1)
             })
         })
