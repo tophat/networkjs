@@ -55,14 +55,6 @@
     "lint-staged": "^10.5.3",
     "prettier": "^2.2.1"
   },
-  "jest": {
-    "setupFiles": [
-      "<rootDir>/node_modules/regenerator-runtime/runtime"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.js"
-    ]
-  },
   "engines": {
     "node": ">=12.16.1"
   },
