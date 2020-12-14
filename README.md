@@ -1,27 +1,28 @@
 # NetworkJS
-[![CircleCI](https://circleci.com/gh/tophat/networkjs.svg?style=svg)](https://circleci.com/gh/tophat/networkjs)
-[![codecov](https://codecov.io/gh/tophat/networkjs/branch/master/graph/badge.svg)](https://codecov.io/gh/tophat/networkjs)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tophat/networkjs)](https://dependabot.com)
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat)](#contributors)
+[![GitHub license](https://img.shields.io/github/license/tophat/networkjs)](https://github.com/tophat/networkjs/blob/master/LICENSE) [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat)](#contributors)
 [![Maturity badge - level 1](https://img.shields.io/badge/Maturity-Level%201%20--%20New%20Project-yellow.svg)](https://github.com/tophat/getting-started/blob/master/scorecard.md)
 [![Slack workspace](https://slackinvite.dev.tophat.com/badge.svg)](https://opensource.tophat.com/slack)
+
+[![codecov](https://codecov.io/gh/tophat/networkjs/branch/master/graph/badge.svg)](https://codecov.io/gh/tophat/networkjs)
+
+## Overview
 
 A utility library that emits network connectivity events
 
 ## Installation
 
-```
-yarn add network-js
+Min Node Version. 12.16.1
+
+```sh
+yarn add git@github.com:tophat/networkjs.git
 ```
 
 or
 
+```sh
+npm install git@github.com:tophat/networkjs.git
 ```
-npm install network-js
-```
-
-This library has no external dependencies.
 
 ## Usage
 
@@ -186,6 +187,8 @@ Net.all((event) => {
 ```
 
 ## Contributors ✨
+
+[See Contributing Guide](./CONTRIBUTING.md) to get started contributing.
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 

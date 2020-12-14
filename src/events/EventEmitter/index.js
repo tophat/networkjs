@@ -11,7 +11,7 @@ export default class EventEmitter {
     }
 
     dispatchEvent(eventName, ...eventArgs) {
-        this.events[eventName].callbacks.forEach(callback => {
+        this.events[eventName].callbacks.forEach((callback) => {
             callback(...eventArgs)
         })
     }

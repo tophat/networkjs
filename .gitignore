@@ -1,4 +1,12 @@
 node_modules
-yarn-error.log
-lib
-coverage
+lib/
+coverage/
+artifacts/
+*.log
+*.junit.xml
+
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/versions
+.pnp.*
