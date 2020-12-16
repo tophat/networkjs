@@ -17,7 +17,7 @@ jobs:
             ref: ${{ github.event.pull_request.head.sha }}
             fetch-depth: 0
         - name: Commit Watch
-          uses: tophat/commit-watch-action@653e317ed9f9bce13c1744c26af00c998e65c3b8
+          uses: tophat/commit-watch-action@486562a4f845e167e2cf322485ee7e2a05b614b5
           with:
             github_token: ${{ secrets.GH_TOKEN }}
             artifact_dir: ${{ env.ARTIFACT_DIR }}
