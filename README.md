@@ -197,14 +197,16 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/jackcohen5"><img src="https://avatars3.githubusercontent.com/u/8365264?v=4" width="100px;" alt=""/><br /><sub><b>Jack Cohen</b></sub></a><br /><a href="#ideas-jackcohen5" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/tophat/networkjs/commits?author=jackcohen5" title="Code">💻</a></td>
-    <td align="center"><a href="https://mcataford.github.io"><img src="https://avatars2.githubusercontent.com/u/6210361?v=4" width="100px;" alt=""/><br /><sub><b>Marc Cataford</b></sub></a><br /><a href="#infra-mcataford" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
-    <td align="center"><a href="https://github.com/StealthGiraffe"><img src="https://avatars0.githubusercontent.com/u/23384568?v=4" width="100px;" alt=""/><br /><sub><b>StealthGiraffe</b></sub></a><br /><a href="https://github.com/tophat/networkjs/commits?author=StealthGiraffe" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/jackcohen5"><img src="https://avatars3.githubusercontent.com/u/8365264?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jack Cohen</b></sub></a><br /><a href="#ideas-jackcohen5" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/tophat/networkjs/commits?author=jackcohen5" title="Code">💻</a></td>
+    <td align="center"><a href="https://mcataford.github.io"><img src="https://avatars2.githubusercontent.com/u/6210361?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Marc Cataford</b></sub></a><br /><a href="#infra-mcataford" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+    <td align="center"><a href="https://github.com/StealthGiraffe"><img src="https://avatars0.githubusercontent.com/u/23384568?v=4?s=100" width="100px;" alt=""/><br /><sub><b>StealthGiraffe</b></sub></a><br /><a href="https://github.com/tophat/networkjs/commits?author=StealthGiraffe" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/asottile"><img src="https://avatars3.githubusercontent.com/u/1810591?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Anthony Sottile</b></sub></a><br /><a href="#security-asottile" title="Security">🛡️</a></td>
   </tr>
 </table>
 
-<!-- markdownlint-enable -->
+<!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
