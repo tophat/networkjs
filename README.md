@@ -1,5 +1,12 @@
 # NetworkJS
 
+> ## Deprecation Notice
+>
+> **As part of general Open Source org housekeeping, and due to lack of interest in this project, we have decided to archive NetworkJS.**
+>
+
+---
+
 [![GitHub license](https://img.shields.io/github/license/tophat/networkjs)](https://github.com/tophat/networkjs/blob/master/LICENSE) [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat)](#contributors)
 [![Maturity badge - level 1](https://img.shields.io/badge/Maturity-Level%201%20--%20New%20Project-yellow.svg)](https://github.com/tophat/getting-started/blob/master/scorecard.md)
 [![Slack workspace](https://slackinvite.dev.tophat.com/badge.svg)](https://opensource.tophat.com/slack)
